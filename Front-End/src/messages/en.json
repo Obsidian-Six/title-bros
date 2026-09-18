@@ -1,0 +1,623 @@
+{
+  "navbar": {
+    "brand": {
+      "title": "TITLE BROS",
+      "highlight": "LOANS"
+    },
+    "call": "call",
+    "applyNow": "Apply Now",
+    "navItems": [
+      { "label": "Process", "href": "/how-it-works" },
+      { "label": "Calculator", "href": "/calculator" },
+      { "label": "Requirements", "href": "/requirements" },
+      { "label": "Why Title Bros", "href": "/why-us" },
+      { "label": "FAQ", "href": "/faq" }
+    ]
+  },
+
+  "hero": {
+    "location": "Las Vegas • Nevada",
+    "title": "Get cash fast.",
+    "titleHighlight": "Keep your car.",
+    "description": "Get access to cash using your vehicle title while your car stays with you.",
+    "qualify": "See if you qualify",
+    "calculator": "Estimate my loan",
+    "benefits": {
+      "driving": "Keep driving",
+      "process": "Clear process",
+      "support": "Local support"
+    },
+    "scroll": "Scroll to transform"
+  },
+
+  "stats": [
+    {
+      "value": "15+",
+      "label": "Years of lending experience"
+    },
+    {
+      "value": "24/7",
+      "label": "Online application access"
+    },
+    {
+      "value": "5",
+      "label": "Simple steps to get started"
+    },
+    {
+      "value": "100%",
+      "label": "Keep driving your vehicle"
+    }
+  ],
+
+  "process": {
+    "eyebrow": "HOW IT WORKS",
+    "title": "Simple steps.",
+    "titleHighlight": "No mystery.",
+    "description": "The experience is designed to make every step easy to understand, from application to repayment.",
+    "steps": [
+      {
+        "number": "01",
+        "title": "Apply",
+        "text": "Tell us about your vehicle, your needs, and the amount you are looking for."
+      },
+      {
+        "number": "02",
+        "title": "Vehicle inspection",
+        "text": "We verify your vehicle and title information with a straightforward inspection."
+      },
+      {
+        "number": "03",
+        "title": "Get your offer",
+        "text": "Review a loan offer and repayment terms before you decide to move forward."
+      },
+      {
+        "number": "04",
+        "title": "Sign & get cash",
+        "text": "Complete the paperwork and receive your funds while keeping your car."
+      },
+      {
+        "number": "05",
+        "title": "Repay & get your title",
+        "text": "Make your scheduled payments and receive your vehicle title when the loan is paid."
+      }
+    ]
+  },
+
+  "requirements": {
+    "cards": [
+      {
+        "title": "Vehicle",
+        "text": "Accepted vehicle details and title information."
+      },
+      {
+        "title": "Identification",
+        "text": "Valid identification and personal information."
+      },
+      {
+        "title": "Contact",
+        "text": "Current phone, email, and ZIP code."
+      },
+      {
+        "title": "Loan need",
+        "text": "Requested amount and reason for funds."
+      },
+      {
+        "title": "Documentation",
+        "text": "Additional documents may be requested during review."
+      },
+      {
+        "title": "What is not required",
+        "text": "Do not publish absolute claims until Title Bros confirms final eligibility rules."
+      }
+    ]
+  },
+
+  "why-us": {
+    "eyebrow": "WHY TITLE BROS",
+    "title": "A title-loan brand that feels",
+    "titleHighlight": "human.",
+    "description": "Modern digital experience on the front. Local people and clear communication behind it.",
+    "differentiators": [
+      {
+        "number": "01",
+        "title": "Keep driving",
+        "text": "Your vehicle remains with you throughout the loan period."
+      },
+      {
+        "number": "02",
+        "title": "Fast process",
+        "text": "A simple digital-first experience designed around getting you moving."
+      },
+      {
+        "number": "03",
+        "title": "Local team",
+        "text": "A Las Vegas-focused team that understands the local community."
+      },
+      {
+        "number": "04",
+        "title": "Clear terms",
+        "text": "See the offer, repayment expectations, and important details before signing."
+      },
+      {
+        "number": "05",
+        "title": "Flexible access",
+        "text": "Start online from your phone, tablet, or desktop whenever it is convenient."
+      },
+      {
+        "number": "06",
+        "title": "Human support",
+        "text": "Need help? Talk to a real Title Bros team member."
+      }
+    ]
+  },
+
+  "faq": {
+    "eyebrow": "FAQ",
+    "pageTitle": "Answers before you make a decision.",
+    "intro": "Browse common questions about title loans, eligibility, the process, repayment, and Title Bros.",
+    "title1": "Good questions deserve",
+    "titleHighlight": "clear answers.",
+    "secIntro": "Explore common questions before you apply.",
+    "seeAll": "See all FAQs",
+    "items": [
+      {
+        "question": "What is a car title loan?",
+        "answer": "A car title loan uses your vehicle title as collateral. Title Bros' concept is designed so eligible customers can continue driving their vehicle while the loan is active."
+      },
+      {
+        "question": "Do I keep my car?",
+        "answer": "Yes. The service described for Title Bros is built around customers keeping and driving their vehicle during the loan period."
+      },
+      {
+        "question": "Do I need a perfect credit score?",
+        "answer": "The site concept is not positioned around a traditional perfect-credit requirement. Eligibility is determined using the application, vehicle, title, and other required information."
+      },
+      {
+        "question": "What documents do I need?",
+        "answer": "Typical requirements can include vehicle/title information, identification, and other documentation requested during the application process. Final requirements should be confirmed by Title Bros."
+      },
+      {
+        "question": "How much can I borrow?",
+        "answer": "The available loan range depends on the vehicle, title, application information, and Title Bros' approved lending criteria."
+      },
+      {
+        "question": "How fast is the process?",
+        "answer": "Title Bros is positioning the experience around fast access to cash, but the exact funding timeline depends on verification, approval, documentation, and applicable requirements."
+      },
+      {
+        "question": "Can I apply online?",
+        "answer": "Yes. The planned website includes a multi-step online application designed for mobile and desktop users."
+      },
+      {
+        "question": "Is Title Bros licensed in Nevada?",
+        "answer": "The project scope describes Title Bros as a licensed Nevada financial service operating under NRS Chapter 604A. The final website should display the client's verified license number before launch."
+      },
+      {
+        "question": "Can I pay my loan early?",
+        "answer": "Early repayment terms should be confirmed in the final loan agreement and client-approved legal content."
+      },
+      {
+        "question": "Where is Title Bros located?",
+        "answer": "Title Bros is a Las Vegas, Nevada business. The final address, hours, phone number, and directions should be inserted from the client's verified business information."
+      }
+    ]
+  },
+
+  "footer": {
+    "brand": {
+      "title": "TITLE BROS",
+      "highlight": "LOANS"
+    },
+    "headline": "Get cash fast. ",
+    "headlineHighlight": "Keep your car.",
+    "applyButton": "Start your application",
+    "explore": "Explore",
+    "contact": "Contact",
+    "whatsapp": "WhatsApp",
+    "location": "Las Vegas, Nevada",
+    "copyright": "© 2026 Title Bros Loans. All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms & Conditions",
+    "links": {
+      "howItWorks": "How It Works",
+      "calculator": "Loan Calculator",
+      "requirements": "Requirements",
+      "whyUs": "Why Title Bros",
+      "faq": "FAQ",
+      "testimonials": "Testimonials",
+      "resources": "Resources",
+      "contact": "Contact"
+    }
+  },
+  "testimonials": {
+    "eyebrow": "CUSTOMER STORIES",
+    "title": "Real people. Real reasons to keep moving.",
+    "intro": "Customer stories can be managed through the planned CMS once the backend is connected.",
+    "pageTitle": "Trust is built one",
+    "titleHighlight": "conversation",
+    "titleEnding": "at a time.",
+    "items": [
+      {
+        "quote": "The process felt simple and straightforward. I could keep using my car while handling an unexpected expense.",
+        "name": "Maria",
+        "meta": "Las Vegas, NV"
+      },
+      {
+        "quote": "I liked being able to start the application online and understand what documents I needed before coming in.",
+        "name": "Daniel",
+        "meta": "Henderson, NV"
+      },
+      {
+        "quote": "Everything was explained clearly. The team answered my questions without making the process complicated.",
+        "name": "James",
+        "meta": "North Las Vegas, NV"
+      }
+    ]
+  },
+  "loanEstimator": {
+    "eyebrow": "LOAN ESTIMATOR",
+    "title": "See what your car could unlock.",
+    "description": "Use this concept estimator for an indicative range. Final loan amounts, rates, terms, and eligibility are determined by Title Bros after review.",
+    "calculatorButton": "Open full calculator",
+    "vehicleValue": "Estimated vehicle value",
+    "indicative": "Indicative",
+    "loanRange": "Example loan range",
+    "disclaimer": "Example only. Not an offer or guarantee of approval. Actual terms are subject to Title Bros' underwriting and applicable Nevada requirements."
+  },
+  "calculator": {
+    "page": {
+      "eyebrow": "LOAN CALCULATOR",
+      "title": "Estimate a potential loan range from your vehicle value.",
+      "intro": "This calculator is an educational estimate only. It is not a credit decision, quote, commitment, or offer of credit.",
+      "disclaimerTitle": "Important disclaimer",
+      "disclaimerText": "Final loan amount, interest rate, repayment schedule, eligibility, fees, and all other terms are subject to Title Bros' underwriting, applicable Nevada law, and the final loan agreement. Replace this copy with attorney-reviewed language before launch."
+    },
+
+    "application": {
+      "eyebrow": "YOUR APPLICATION",
+      "title": "Get started in a few simple steps.",
+      "description": "Tell us a little about your vehicle and what you're looking for.",
+      "secureTitle": "Your information is secure",
+      "secureDescription": "Your estimate is educational and does not commit you to a loan."
+    },
+
+    "steps": {
+      "vehicle": {
+        "title": "Vehicle",
+        "description": "Tell us about your vehicle"
+      },
+      "loan": {
+        "title": "Loan",
+        "description": "Choose your loan amount"
+      },
+      "aboutYou": {
+        "title": "About You",
+        "description": "A few details about you"
+      },
+      "estimate": {
+        "title": "Estimate",
+        "description": "Review your estimate"
+      }
+    },
+
+    "navigation": {
+      "back": "Back",
+      "continue": "Continue",
+      "seeEstimate": "See My Estimate",
+      "backToInformation": "Back to my information"
+    },
+    "loanStep": {
+      "eyebrow": "STEP 02 / LOAN",
+      "title": "How much are you looking for?",
+      "description": "Choose an amount that works for what you have in mind.",
+      "desiredAmount": "Desired loan amount",
+      "potentialRange": "Potential range",
+      "requestedAmount": "Your requested amount",
+      "vehicleEstimate": "Vehicle estimate",
+      "disclaimer": "This range is an educational estimate and is not a loan offer, quote, or commitment."
+    },
+    "vehicleStep": {
+      "eyebrow": "STEP 01 / VEHICLE",
+      "title": "Tell us about your vehicle.",
+      "description": "We'll use these details to estimate your vehicle's potential value.",
+
+      "vehicleYear": "Vehicle year",
+      "selectYear": "Select year",
+      "vehicleMake": "Vehicle make",
+      "selectMake": "Select make",
+      "vehicleModel": "Vehicle model",
+      "selectModel": "Select your vehicle model",
+      "selectMakeFirst": "Select your vehicle make first",
+      "other": "Other",
+      "currentMileage": "Current mileage",
+      "mileagePlaceholder": "e.g. 65,000",
+      "vehicleCondition": "Vehicle condition",
+      "vehicleTitle": "Vehicle title",
+      "selectTitleStatus": "Select title status",
+
+      "condition": {
+        "excellent": "Excellent",
+        "excellentDescription": "Like new",
+
+        "good": "Good",
+        "goodDescription": "Minor wear",
+
+        "fair": "Fair",
+        "fairDescription": "Normal wear",
+
+        "poor": "Poor",
+        "poorDescription": "Needs work"
+      },
+
+      "titleStatus": {
+        "clear-title": "Clear title",
+        "clear-titleDescription": "No active lien",
+
+        "paid-off-vehicle": "Paid-off vehicle",
+        "paid-off-vehicleDescription": "Loan is paid",
+
+        "existing-lien": "Existing lien",
+        "existing-lienDescription": "Vehicle currently has a lien",
+
+        "rebuilt-title": "Rebuilt title",
+        "rebuilt-titleDescription": "Vehicle has a rebuilt title",
+
+        "i-dont-know": "I don't know",
+        "i-dont-knowDescription": "Title status unknown"
+      }
+    },
+    "personalInfoStep": {
+      "eyebrow": "STEP 03 / ABOUT YOU",
+      "title": "Almost there.",
+      "description": "Enter your information so we can personalize your experience.",
+
+      "firstName": "First name",
+      "firstNamePlaceholder": "John",
+
+      "lastName": "Last name",
+      "lastNamePlaceholder": "Smith",
+
+      "phone": "Phone number",
+      "phonePlaceholder": "(555) 123-4567",
+
+      "email": "Email address",
+      "emailPlaceholder": "john@example.com",
+
+      "zip": "ZIP code",
+      "zipPlaceholder": "89101",
+
+      "employment": "Employment status",
+      "selectStatus": "Select status",
+
+      "monthlyIncome": "Approximate monthly income",
+      "monthlyIncomePlaceholder": "4,500",
+
+      "employmentOptions": {
+        "Employed": "Employed",
+        "Self-employed": "Self-employed",
+        "Retired": "Retired",
+        "Other": "Other"
+      }
+    },
+    "estimateStep": {
+      "eyebrow": "YOUR ESTIMATE",
+      "potentialLoanRange": "Potential loan range",
+      "estimatedVehicleValue": "Estimated vehicle value",
+      "disclaimer": "This is an educational estimate based on the information provided. Actual loan amounts, rates, fees, eligibility, and terms may vary.",
+      "vehicleDetails": "Vehicle details",
+      "edit": "Edit",
+      "vehicle": "Vehicle",
+      "mileage": "Mileage",
+      "miles": "miles",
+      "condition": "Condition",
+      "amountRequested": "Amount requested",
+      "readyTitle": "Ready to take the next step?",
+      "readyDescription": "Continue to the application to see whether you may qualify for financing.",
+      "continueApplication": "Continue My Application"
+    },
+    "submitModal": {
+      "almostThere": "Almost there",
+      "title": "Get your loan estimate",
+      "description": "Review your information and submit your request.",
+      "vehicle": "Vehicle",
+      "mileage": "Mileage",
+      "miles": "miles",
+      "potentialRange": "Potential range",
+      "goBack": "Go Back",
+      "submitRequest": "Submit Request",
+      "submitting": "Submitting...",
+      "requestSubmitted": "Request submitted",
+      "thanks": "Thanks, {firstName}. Your information has been received.",
+      "done": "Done"
+    }
+  },
+  "apply": {
+    "eyebrow": "APPLY NOW",
+    "title": "Start with a few simple details.",
+    "description": "Complete the application below and our team will review your information.",
+
+    "steps": {
+      "vehicle": {
+        "title": "Vehicle",
+        "description": "Tell us about your vehicle",
+        "fields": {
+          "year": "Year",
+          "make": "Make",
+          "model": "Model",
+          "estimatedValue": "Estimated value"
+        }
+      },
+      "personal": {
+        "title": "Personal",
+        "description": "Your contact information",
+        "fields": {
+          "firstName": "First name",
+          "lastName": "Last name",
+          "phone": "Phone",
+          "email": "Email"
+        }
+      },
+      "loan": {
+        "title": "Loan",
+        "description": "What do you need?",
+        "fields": {
+          "amountRequested": "Amount requested",
+          "reasonForFunds": "Reason for funds",
+          "employmentStatus": "Employment status",
+          "zipCode": "ZIP code"
+        }
+      },
+      "submit": {
+        "title": "Submit",
+        "description": "Ready to review"
+      }
+    },
+
+    "stepOf": "Step {step} of {total}",
+
+    "placeholders": {
+      "enter": "Enter {field}"
+    },
+
+    "validation": {
+      "required": "This field is required"
+    },
+
+    "review": {
+      "title": "Ready to review",
+      "description": "Please review your information and submit your application.",
+      "name": "Name",
+      "phone": "Phone",
+      "email": "Email",
+      "vehicle": "Vehicle",
+      "requested": "Requested"
+    },
+
+    "success": {
+      "title": "Application submitted!",
+      "description": "Thank you for applying. Our team will review your information and contact you shortly."
+    },
+
+    "ready": {
+      "title": "Your application is ready.",
+      "description": "Please review your information and submit your application."
+    },
+
+    "buttons": {
+      "back": "Back",
+      "continue": "Continue",
+      "submit": "Submit application",
+      "submitting": "Submitting..."
+    },
+
+    "error": {
+      "somethingWentWrong": "Something went wrong. Please try again."
+    }
+  },
+  "contact": {
+    "location": "LAS VEGAS",
+    "title": "Talk to the Title Bros team.",
+    "phone": "(702) 555-0123",
+    "city": "Las Vegas, Nevada",
+    "applyOnline": "Apply online",
+    "mapPlaceholder": "MAP / LOCATION PLACEHOLDER",
+    "addressPlaceholder": "Insert verified Title Bros address",
+    "mapDescription": "Google Maps embed can be connected here."
+  },
+  "legal": {
+    "placeholder": "This starter includes layout and routing only. The project SOW states that Privacy Policy and Terms & Conditions must be attorney-reviewed before launch. Replace this placeholder with the final approved legal copy and do not publish placeholder text."
+  },
+  
+  "resources": {
+    "items": [
+      {
+        "title": "Title Loans 101",
+        "text": "Understand the basics of vehicle-title lending and the questions to ask before signing."
+      },
+      {
+        "title": "Preparing Your Vehicle Information",
+        "text": "A practical checklist for getting your vehicle and title information ready."
+      },
+      {
+        "title": "Borrowing With Clarity",
+        "text": "How to compare loan amounts, repayment terms, costs, and obligations."
+      }
+    ],
+    "resource": "RESOURCE",
+    "readArticle": "Read article"
+  },
+  "next-step": {
+    "eyebrow": "NEXT STEP",
+    "title": "Ready to see what your vehicle could unlock?",
+    "button": "Start application"
+  },
+   "marquee": {
+    "words": [
+      "FAST CASH",
+      "KEEP DRIVING",
+      "LAS VEGAS",
+      "CLEAR TERMS",
+      "TITLE BROS"
+    ]
+  },
+  "ready-section": {
+    "eyebrow": "READY WHEN YOU ARE",
+    "title": "Your next move can start here.",
+    "button": "Apply now"
+  },
+
+  "pages": {
+    "how-it-works": {
+      "eyebrow": "THE PROCESS",
+      "title": "A clear path from application to cash.",
+      "intro": "Five straightforward steps designed to remove guesswork and keep you informed."
+    },
+    "requirements": {
+      "eyebrow": "ELIGIBILITY",
+      "title": "Know what you need before you apply.",
+      "intro": "A simple checklist so you can prepare the information and documents needed for your application."
+    },
+    "why-us": {
+      "eyebrow": "WHY TITLE BROS",
+      "title": "Built around people, not paperwork.",
+      "intro": "A modern title-loan experience with local support, clear information, and a focus on keeping you moving."
+    },
+    "faq": {
+      "eyebrow": "QUESTIONS",
+      "title": "Answers before you make a decision.",
+      "intro": "Browse common questions about title loans, eligibility, the process, repayment, and Title Bros."
+    },
+    "testimonials": {
+      "eyebrow": "CUSTOMER STORIES",
+      "title": "Real people. Real reasons to keep moving.",
+      "intro": "Customer stories can be managed through the planned CMS once the backend is connected."
+    },
+    "blog": {
+      "eyebrow": "RESOURCES",
+      "title": "Useful information for smarter borrowing.",
+      "intro": "An SEO-ready resource hub for title-loan education, vehicle ownership, and local financial topics."
+    },
+    "contact": {
+      "eyebrow": "CONTACT",
+      "title": "Let's talk about your next step.",
+      "intro": "Call, message, or visit the Title Bros team in Las Vegas. Replace the placeholder business details before launch."
+    },
+    "privacy-policy": {
+      "eyebrow": "LEGAL",
+      "title": "Privacy Policy",
+      "intro": "Placeholder structure only. The SOW requires attorney review before launch."
+    },
+    "terms": {
+      "eyebrow": "LEGAL",
+      "title": "Terms & Conditions",
+      "intro": "Placeholder structure only. The SOW requires attorney review before launch."
+    },
+    "calculator": {
+      "eyebrow": "LOAN CALCULATOR",
+      "title": "Estimate a potential loan range from your vehicle value.",
+      "intro": "This calculator is an educational estimate only. It is not a credit decision, quote, commitment, or offer of credit.",
+      "disclaimerTitle": "Important disclaimer",
+      "disclaimerText": "Final loan amount, interest rate, repayment schedule, eligibility, fees, and all other terms are subject to Title Bros' underwriting, applicable Nevada law, and the final loan agreement. Replace this copy with attorney-reviewed language before launch."
+    }
+  }
+}

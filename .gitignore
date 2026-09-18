@@ -1,0 +1,53 @@
+# ==============================================================================
+# TITLE BROS - ROOT GITIGNORE
+# ==============================================================================
+
+# Dependencies
+node_modules/
+**/node_modules/
+.pnp
+.pnp.js
+
+# Build and Production Artifacts
+.next/
+**/.next/
+out/
+**/out/
+build/
+**/build/
+dist/
+**/dist/
+.vercel
+
+# Environment configuration - Keep live secrets strictly local
+.env*
+**/.env*
+!.env.example
+!**/.env.example
+
+# Uploaded documents binaries (keep folder structure with .gitkeep)
+uploads/documents/*
+**/uploads/documents/*
+!uploads/documents/.gitkeep
+!**/uploads/documents/.gitkeep
+
+# Logs & Runtime
+*.log
+**/*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+logs/
+**/logs/
+
+# Operating System files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# Editor & IDE configs
+.vscode/
+.idea/
+*.swp
+*.swo

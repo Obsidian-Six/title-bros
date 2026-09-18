@@ -1,0 +1,627 @@
+{
+  "navbar": {
+    "brand": {
+      "title": "TITLE BROS",
+      "highlight": "CRÉDITO"
+    },
+    "call": "Llamar",
+    "applyNow": "Solicitar ahora",
+    "navItems": [
+      {
+        "label": "Proceso",
+        "href": "/how-it-works"
+      },
+      {
+        "label": "Calculadora",
+        "href": "/calculator"
+      },
+      {
+        "label": "Requisitos",
+        "href": "/requirements"
+      },
+      {
+        "label": "Por qué Title Bros",
+        "href": "/why-us"
+      },
+      {
+        "label": "Preguntas",
+        "href": "/faq"
+      }
+    ]
+  },
+
+  "hero": {
+    "location": "Las Vegas • Nevada",
+    "title": "Efectivo rápido",
+    "titleHighlight": "Conserva tu auto.",
+    "description": "Obtén acceso a efectivo usando el título de tu vehículo mientras sigues conduciendo tu auto.",
+    "qualify": "Comprueba si calificas",
+    "calculator": "Calcula mi préstamo",
+    "benefits": {
+      "driving": "Sigue conduciendo",
+      "process": "Proceso sencillo",
+      "support": "Atención local"
+    },
+    "scroll": "Desplázate para transformar"
+  },
+
+  "stats": [
+    {
+      "value": "15+",
+      "label": "Años de experiencia en préstamos"
+    },
+    {
+      "value": "24/7",
+      "label": "Acceso a la solicitud en línea"
+    },
+    {
+      "value": "5",
+      "label": "Pasos sencillos para comenzar"
+    },
+    {
+      "value": "100%",
+      "label": "Sigue conduciendo tu vehículo"
+    }
+  ],
+
+  "process": {
+    "eyebrow": "CÓMO FUNCIONA",
+    "title": "Pasos sencillos.",
+    "titleHighlight": "Sin complicaciones.",
+    "description": "La experiencia está diseñada para que cada paso sea fácil de entender, desde la solicitud hasta el pago.",
+
+    "steps": [
+      {
+        "number": "01",
+        "title": "Solicita",
+        "text": "Cuéntanos sobre tu vehículo, tus necesidades y la cantidad que estás buscando."
+      },
+      {
+        "number": "02",
+        "title": "Inspección del vehículo",
+        "text": "Verificamos tu vehículo y la información del título mediante una inspección sencilla."
+      },
+      {
+        "number": "03",
+        "title": "Obtén tu oferta",
+        "text": "Revisa la oferta de préstamo y las condiciones de pago antes de decidir continuar."
+      },
+      {
+        "number": "04",
+        "title": "Firma y recibe el dinero",
+        "text": "Completa la documentación y recibe tus fondos mientras conservas tu vehículo."
+      },
+      {
+        "number": "05",
+        "title": "Paga y recibe tu título",
+        "text": "Realiza tus pagos programados y recibe el título de tu vehículo cuando el préstamo esté liquidado."
+      }
+    ]
+  },
+
+  "requirements": {
+    "cards": [
+      {
+        "title": "Vehículo",
+        "text": "Detalles del vehículo aceptado e información del título."
+      },
+      {
+        "title": "Identificación",
+        "text": "Identificación válida e información personal."
+      },
+      {
+        "title": "Contacto",
+        "text": "Número de teléfono, correo electrónico y código postal actuales."
+      },
+      {
+        "title": "Necesidad del préstamo",
+        "text": "Monto solicitado y motivo de los fondos."
+      },
+      {
+        "title": "Documentación",
+        "text": "Es posible que se soliciten documentos adicionales durante la revisión."
+      },
+      {
+        "title": "Lo que no es necesario",
+        "text": "No publiques afirmaciones absolutas hasta que Title Bros confirme los requisitos finales de elegibilidad."
+      }
+    ]
+  },
+  "testimonials": {
+    "eyebrow": "HISTORIAS DE CLIENTES",
+    "title": "Personas reales. Razones reales para seguir adelante.",
+    "intro": "Las historias de clientes se pueden administrar mediante el CMS planificado una vez que el backend esté conectado.",
+    "pageTitle": "La confianza se construye una",
+    "titleHighlight": "conversación",
+    "titleEnding": "a la vez.",
+    "items": [
+      {
+        "quote": "El proceso fue sencillo y directo. Pude seguir usando mi automóvil mientras afrontaba un gasto inesperado.",
+        "name": "Maria",
+        "meta": "Las Vegas, NV"
+      },
+      {
+        "quote": "Me gustó poder comenzar la solicitud en línea y saber qué documentos necesitaba antes de ir personalmente.",
+        "name": "Daniel",
+        "meta": "Henderson, NV"
+      },
+      {
+        "quote": "Todo fue explicado claramente. El equipo respondió mis preguntas sin hacer que el proceso fuera complicado.",
+        "name": "James",
+        "meta": "North Las Vegas, NV"
+      }
+    ]
+  },
+
+  "why-us": {
+    "eyebrow": "POR QUÉ TITLE BROS",
+    "title": "Una marca de préstamos sobre títulos que se siente",
+    "titleHighlight": "humana.",
+    "description": "Una experiencia digital moderna al frente. Personas locales y una comunicación clara detrás.",
+    "differentiators": [
+      {
+        "number": "01",
+        "title": "Sigue conduciendo",
+        "text": "Tu vehículo permanece contigo durante todo el período del préstamo."
+      },
+      {
+        "number": "02",
+        "title": "Proceso rápido",
+        "text": "Una experiencia digital sencilla diseñada para ayudarte a seguir adelante."
+      },
+      {
+        "number": "03",
+        "title": "Equipo local",
+        "text": "Un equipo enfocado en Las Vegas que entiende a la comunidad local."
+      },
+      {
+        "number": "04",
+        "title": "Condiciones claras",
+        "text": "Consulta la oferta, las expectativas de pago y los detalles importantes antes de firmar."
+      },
+      {
+        "number": "05",
+        "title": "Acceso flexible",
+        "text": "Comienza en línea desde tu teléfono, tableta o computadora cuando te resulte conveniente."
+      },
+      {
+        "number": "06",
+        "title": "Atención personalizada",
+        "text": "¿Necesitas ayuda? Habla con un miembro real del equipo de Title Bros."
+      }
+    ]
+  },
+
+  "faq": {
+    "eyebrow": "PREGUNTAS",
+    "title": "Respuestas antes de tomar una decisión.",
+    "intro": "Consulta preguntas frecuentes sobre préstamos sobre títulos, elegibilidad, el proceso, pagos y Title Bros.",
+    "title1": "Las buenas preguntas merecen",
+    "titleHighlight": "respuestas claras.",
+    "seeAll": "Ver todas las preguntas frecuentes",
+    "items": [
+      {
+        "question": "¿Qué es un préstamo sobre el título de un automóvil?",
+        "answer": "Un préstamo sobre el título de un automóvil utiliza el título de tu vehículo como garantía. El concepto de Title Bros está diseñado para que los clientes elegibles puedan seguir conduciendo su vehículo mientras el préstamo está activo."
+      },
+      {
+        "question": "¿Puedo conservar mi automóvil?",
+        "answer": "Sí. El servicio de Title Bros está diseñado para que los clientes puedan conservar y conducir su vehículo durante el período del préstamo."
+      },
+      {
+        "question": "¿Necesito tener un crédito perfecto?",
+        "answer": "El concepto del sitio no está basado en un requisito de crédito perfecto tradicional. La elegibilidad se determina considerando la solicitud, el vehículo, el título y otra información requerida."
+      },
+      {
+        "question": "¿Qué documentos necesito?",
+        "answer": "Los requisitos habituales pueden incluir información del vehículo y del título, identificación y otra documentación solicitada durante el proceso de solicitud. Los requisitos finales deben ser confirmados por Title Bros."
+      },
+      {
+        "question": "¿Cuánto puedo pedir prestado?",
+        "answer": "El monto disponible depende del vehículo, el título, la información de la solicitud y los criterios de aprobación de Title Bros."
+      },
+      {
+        "question": "¿Qué tan rápido es el proceso?",
+        "answer": "Title Bros presenta la experiencia como una forma rápida de acceder a fondos, pero el tiempo exacto depende de la verificación, aprobación, documentación y requisitos aplicables."
+      },
+      {
+        "question": "¿Puedo solicitar en línea?",
+        "answer": "Sí. El sitio incluye una solicitud en línea de varios pasos diseñada para usuarios de dispositivos móviles y computadoras."
+      },
+      {
+        "question": "¿Title Bros tiene licencia en Nevada?",
+        "answer": "El alcance del proyecto describe a Title Bros como un servicio financiero con licencia en Nevada que opera bajo NRS Capítulo 604A. El sitio final debe mostrar el número de licencia verificado por el cliente antes del lanzamiento."
+      },
+      {
+        "question": "¿Puedo pagar mi préstamo antes de tiempo?",
+        "answer": "Las condiciones de pago anticipado deben confirmarse en el contrato final del préstamo y en el contenido legal aprobado por el cliente."
+      },
+      {
+        "question": "¿Dónde está ubicado Title Bros?",
+        "answer": "Title Bros es una empresa ubicada en Las Vegas, Nevada. La dirección final, el horario, el teléfono y las indicaciones deben agregarse utilizando la información comercial verificada por el cliente."
+      }
+    ]
+  },
+  "footer": {
+    "brand": {
+      "title": "TITLE BROS",
+      "highlight": "CRÉDITO"
+    },
+    "headline": "Obtén efectivo rápido.",
+    "headlineHighlight": "Conserva tu automóvil.",
+    "applyButton": "Comienza tu solicitud",
+    "explore": "Explorar",
+    "contact": "Contacto",
+    "whatsapp": "WhatsApp",
+    "location": "Las Vegas, Nevada",
+    "copyright": "© 2026 Title Bros Loans. Todos los derechos reservados.",
+    "privacy": "Política de Privacidad",
+    "terms": "Términos y Condiciones",
+    "links": {
+      "howItWorks": "Cómo funciona",
+      "calculator": "Calculadora de préstamos",
+      "requirements": "Requisitos",
+      "whyUs": "Por qué Title Bros",
+      "faq": "Preguntas frecuentes",
+      "testimonials": "Testimonios",
+      "resources": "Recursos",
+      "contact": "Contacto"
+    }
+  },
+  "loanEstimator": {
+    "eyebrow": "CALCULADORA DE PRÉSTAMO",
+    "title": "Descubre cuánto podría darte tu automóvil.",
+    "description": "Utiliza esta calculadora de referencia para obtener un rango indicativo. Los montos finales, las tasas, los plazos y la elegibilidad serán determinados por Title Bros después de revisar tu solicitud.",
+    "calculatorButton": "Abrir calculadora completa",
+    "vehicleValue": "Valor estimado del vehículo",
+    "indicative": "Indicativo",
+    "loanRange": "Rango de préstamo de ejemplo",
+    "disclaimer": "Solo como ejemplo. No constituye una oferta ni garantiza la aprobación. Los términos reales están sujetos a la evaluación de Title Bros y a los requisitos aplicables de Nevada."
+  },
+  "calculator": {
+    "page": {
+      "eyebrow": "CALCULADORA DE PRÉSTAMOS",
+      "title": "Estima un posible rango de préstamo según el valor de tu vehículo.",
+      "intro": "Esta calculadora es solo una estimación educativa. No constituye una decisión crediticia, cotización, compromiso ni oferta de crédito.",
+      "disclaimerTitle": "Aviso importante",
+      "disclaimerText": "El monto final del préstamo, la tasa de interés, el calendario de pagos, la elegibilidad, las tarifas y todos los demás términos están sujetos a la evaluación de Title Bros, las leyes aplicables de Nevada y el acuerdo final del préstamo. Reemplaza este texto con contenido revisado por un abogado antes del lanzamiento."
+    },
+
+    "application": {
+      "eyebrow": "TU SOLICITUD",
+      "title": "Comienza en unos sencillos pasos.",
+      "description": "Cuéntanos un poco sobre tu vehículo y lo que estás buscando.",
+      "secureTitle": "Tu información está segura",
+      "secureDescription": "Tu estimación es educativa y no te compromete a solicitar un préstamo."
+    },
+
+    "steps": {
+      "vehicle": {
+        "title": "Vehículo",
+        "description": "Cuéntanos sobre tu vehículo"
+      },
+      "loan": {
+        "title": "Préstamo",
+        "description": "Elige el monto de tu préstamo"
+      },
+      "aboutYou": {
+        "title": "Sobre ti",
+        "description": "Algunos datos sobre ti"
+      },
+      "estimate": {
+        "title": "Estimación",
+        "description": "Revisa tu estimación"
+      }
+    },
+
+    "navigation": {
+      "back": "Atrás",
+      "continue": "Continuar",
+      "seeEstimate": "Ver mi estimación",
+      "backToInformation": "Volver a mi información"
+    },
+    "loanStep": {
+      "eyebrow": "PASO 02 / PRÉSTAMO",
+      "title": "¿Cuánto estás buscando?",
+      "description": "Elige un monto que se adapte a lo que tienes en mente.",
+      "desiredAmount": "Monto del préstamo deseado",
+      "potentialRange": "Rango potencial",
+      "requestedAmount": "Monto solicitado",
+      "vehicleEstimate": "Valor estimado del vehículo",
+      "disclaimer": "Este rango es una estimación educativa y no constituye una oferta, cotización ni compromiso de préstamo."
+    },
+    "vehicleStep": {
+      "eyebrow": "PASO 01 / VEHÍCULO",
+      "title": "Cuéntanos sobre tu vehículo.",
+      "description": "Usaremos estos datos para estimar el valor potencial de tu vehículo.",
+      "vehicleYear": "Año del vehículo",
+      "selectYear": "Selecciona el año",
+      "vehicleMake": "Marca del vehículo",
+      "selectMake": "Selecciona la marca",
+      "vehicleModel": "Modelo del vehículo",
+      "selectModel": "Selecciona el modelo de tu vehículo",
+      "selectMakeFirst": "Selecciona primero la marca de tu vehículo",
+      "other": "Otro",
+      "currentMileage": "Kilometraje actual",
+      "mileagePlaceholder": "ej. 65,000",
+      "vehicleCondition": "Condición del vehículo",
+      "vehicleTitle": "Título del vehículo",
+      "selectTitleStatus": "Selecciona el estado del título",
+      "condition": {
+        "excellent": "Excelente",
+        "excellentDescription": "Como nuevo",
+        "good": "Bueno",
+        "goodDescription": "Desgaste menor",
+        "fair": "Regular",
+        "fairDescription": "Desgaste normal",
+        "poor": "Deficiente",
+        "poorDescription": "Necesita reparaciones"
+      },
+      "titleStatus": {
+        "clear-title": "Título limpio",
+        "clear-titleDescription": "Sin gravamen activo",
+        "paid-off-vehicle": "Vehículo pagado",
+        "paid-off-vehicleDescription": "El préstamo está pagado",
+        "existing-lien": "Gravamen existente",
+        "existing-lienDescription": "El vehículo actualmente tiene un gravamen",
+        "rebuilt-title": "Título reconstruido",
+        "rebuilt-titleDescription": "El vehículo tiene un título reconstruido",
+        "i-dont-know": "No lo sé",
+        "i-dont-knowDescription": "Estado del título desconocido"
+      }
+    },
+    "personalInfoStep": {
+      "eyebrow": "PASO 03 / SOBRE TI",
+      "title": "Ya casi terminamos.",
+      "description": "Ingresa tu información para que podamos personalizar tu experiencia.",
+
+      "firstName": "Nombre",
+      "firstNamePlaceholder": "Juan",
+
+      "lastName": "Apellido",
+      "lastNamePlaceholder": "García",
+
+      "phone": "Número de teléfono",
+      "phonePlaceholder": "(555) 123-4567",
+
+      "email": "Correo electrónico",
+      "emailPlaceholder": "juan@ejemplo.com",
+
+      "zip": "Código postal",
+      "zipPlaceholder": "89101",
+
+      "employment": "Situación laboral",
+      "selectStatus": "Selecciona tu situación",
+
+      "monthlyIncome": "Ingresos mensuales aproximados",
+      "monthlyIncomePlaceholder": "4,500",
+
+      "employmentOptions": {
+        "Employed": "Empleado",
+        "Self-employed": "Trabajador independiente",
+        "Retired": "Jubilado",
+        "Other": "Otro"
+      }
+    },
+    "estimateStep": {
+      "eyebrow": "TU ESTIMACIÓN",
+      "potentialLoanRange": "Rango potencial del préstamo",
+      "estimatedVehicleValue": "Valor estimado del vehículo",
+      "disclaimer": "Esta es una estimación educativa basada en la información proporcionada. Los montos reales del préstamo, las tasas, las tarifas, la elegibilidad y los términos pueden variar.",
+      "vehicleDetails": "Detalles del vehículo",
+      "edit": "Editar",
+      "vehicle": "Vehículo",
+      "mileage": "Kilometraje",
+      "miles": "millas",
+      "condition": "Condición",
+      "amountRequested": "Monto solicitado",
+      "readyTitle": "¿Listo para dar el siguiente paso?",
+      "readyDescription": "Continúa con la solicitud para saber si podrías calificar para financiamiento.",
+      "continueApplication": "Continuar con mi solicitud"
+    },
+    "submitModal": {
+      "almostThere": "Ya casi terminamos",
+      "title": "Obtén tu estimación de préstamo",
+      "description": "Revisa tu información y envía tu solicitud.",
+      "vehicle": "Vehículo",
+      "mileage": "Kilometraje",
+      "miles": "millas",
+      "potentialRange": "Rango potencial",
+      "goBack": "Volver",
+      "submitRequest": "Enviar solicitud",
+      "submitting": "Enviando...",
+      "requestSubmitted": "Solicitud enviada",
+      "thanks": "Gracias, {firstName}. Hemos recibido tu información.",
+      "done": "Listo"
+    }
+  },
+
+  "apply": {
+    "eyebrow": "SOLICITAR AHORA",
+    "title": "Comienza con unos sencillos datos.",
+    "description": "Completa la solicitud a continuación y nuestro equipo revisará tu información.",
+
+    "steps": {
+      "vehicle": {
+        "title": "Vehículo",
+        "description": "Cuéntanos sobre tu vehículo",
+        "fields": {
+          "year": "Año",
+          "make": "Marca",
+          "model": "Modelo",
+          "estimatedValue": "Valor estimado"
+        }
+      },
+      "personal": {
+        "title": "Datos personales",
+        "description": "Tu información de contacto",
+        "fields": {
+          "firstName": "Nombre",
+          "lastName": "Apellido",
+          "phone": "Teléfono",
+          "email": "Correo electrónico"
+        }
+      },
+      "loan": {
+        "title": "Préstamo",
+        "description": "¿Qué necesitas?",
+        "fields": {
+          "amountRequested": "Monto solicitado",
+          "reasonForFunds": "Motivo de los fondos",
+          "employmentStatus": "Situación laboral",
+          "zipCode": "Código postal"
+        }
+      },
+      "submit": {
+        "title": "Enviar",
+        "description": "Listo para revisar"
+      }
+    },
+
+    "stepOf": "Paso {step} de {total}",
+
+    "placeholders": {
+      "enter": "Ingresa {field}"
+    },
+
+    "validation": {
+      "required": "Este campo es obligatorio"
+    },
+
+    "review": {
+      "title": "Listo para revisar",
+      "description": "Revisa tu información y envía tu solicitud.",
+      "name": "Nombre",
+      "phone": "Teléfono",
+      "email": "Correo electrónico",
+      "vehicle": "Vehículo",
+      "requested": "Solicitado"
+    },
+
+    "success": {
+      "title": "¡Solicitud enviada!",
+      "description": "Gracias por solicitarlo. Nuestro equipo revisará tu información y se pondrá en contacto contigo en breve."
+    },
+
+    "ready": {
+      "title": "Tu solicitud está lista.",
+      "description": "Revisa tu información y envía tu solicitud."
+    },
+
+    "buttons": {
+      "back": "Atrás",
+      "continue": "Continuar",
+      "submit": "Enviar solicitud",
+      "submitting": "Enviando..."
+    },
+
+    "error": {
+      "somethingWentWrong": "Algo salió mal. Inténtalo de nuevo."
+    }
+  },
+  "contact": {
+    "location": "LAS VEGAS",
+    "title": "Habla con el equipo de Title Bros.",
+    "phone": "(702) 555-0123",
+    "city": "Las Vegas, Nevada",
+    "applyOnline": "Solicitar en línea",
+    "mapPlaceholder": "MAPA / UBICACIÓN PENDIENTE",
+    "addressPlaceholder": "Inserta la dirección verificada de Title Bros",
+    "mapDescription": "Aquí se puede conectar un mapa de Google Maps."
+  },
+
+  "legal": {
+    "placeholder": "Este proyecto inicial incluye únicamente el diseño y el enrutamiento. El alcance del proyecto establece que la Política de Privacidad y los Términos y Condiciones deben ser revisados por un abogado antes del lanzamiento. Reemplace este texto provisional con el contenido legal final aprobado y no publique texto provisional."
+  },
+
+  "resources": {
+    "items": [
+      {
+        "title": "Préstamos sobre el título de propiedad 101",
+        "text": "Comprenda los conceptos básicos de los préstamos sobre el título de un vehículo y las preguntas que debe hacer antes de firmar."
+      },
+      {
+        "title": "Preparación de la información de su vehículo",
+        "text": "Una lista práctica para preparar la información de su vehículo y del título de propiedad."
+      },
+      {
+        "title": "Cómo pedir prestado con claridad",
+        "text": "Cómo comparar los montos del préstamo, los plazos de pago, los costos y las obligaciones."
+      }
+    ],
+    "resource": "RECURSO",
+    "readArticle": "Leer artículo"
+  },
+  "next-step": {
+    "eyebrow": "SIGUIENTE PASO",
+    "title": "¿Listo para descubrir lo que tu vehículo puede ayudarte a conseguir?",
+    "button": "Comenzar solicitud"
+  },
+  "marquee": {
+    "words": [
+      "DINERO RÁPIDO",
+      "SIGUE CONDUCIENDO",
+      "LAS VEGAS",
+      "TÉRMINOS CLAROS",
+      "TITLE BROS"
+    ]
+  },
+  "ready-section": {
+    "eyebrow": "LISTO CUANDO TÚ LO ESTÉS",
+    "title": "Tu próximo paso puede comenzar aquí.",
+    "button": "Solicita ahora"
+  },
+
+  "pages": {
+    "how-it-works": {
+      "eyebrow": "EL PROCESO",
+      "title": "Un camino claro desde la solicitud hasta el dinero.",
+      "intro": "Cinco pasos sencillos diseñados para eliminar dudas y mantenerte informado."
+    },
+    "requirements": {
+      "eyebrow": "ELEGIBILIDAD",
+      "title": "Conoce lo que necesitas antes de solicitar.",
+      "intro": "Una lista sencilla para que puedas preparar la información y los documentos necesarios para tu solicitud."
+    },
+    "why-us": {
+      "eyebrow": "POR QUÉ TITLE BROS",
+      "title": "Diseñado para las personas, no para el papeleo.",
+      "intro": "Una experiencia moderna de préstamos sobre títulos, con atención local, información clara y un enfoque en ayudarte a seguir adelante."
+    },
+    "faq": {
+      "eyebrow": "PREGUNTAS",
+      "title": "Respuestas antes de tomar una decisión.",
+      "intro": "Consulta preguntas frecuentes sobre préstamos sobre títulos, elegibilidad, el proceso, pagos y Title Bros."
+    },
+    "testimonials": {
+      "eyebrow": "HISTORIAS DE CLIENTES",
+      "title": "Personas reales. Razones reales para seguir adelante.",
+      "intro": "Las historias de clientes pueden administrarse mediante el CMS planificado una vez que el backend esté conectado."
+    },
+    "blog": {
+      "eyebrow": "RECURSOS",
+      "title": "Información útil para pedir prestado de manera más inteligente.",
+      "intro": "Un centro de recursos preparado para SEO sobre educación de préstamos sobre títulos, propiedad de vehículos y temas financieros locales."
+    },
+    "contact": {
+      "eyebrow": "CONTACTO",
+      "title": "Hablemos sobre tu próximo paso.",
+      "intro": "Llama, envía un mensaje o visita al equipo de Title Bros en Las Vegas. Reemplaza los datos comerciales de ejemplo antes del lanzamiento."
+    },
+    "privacy-policy": {
+      "eyebrow": "LEGAL",
+      "title": "Política de privacidad",
+      "intro": "Estructura provisional únicamente. El SOW requiere revisión legal antes del lanzamiento."
+    },
+    "terms": {
+      "eyebrow": "LEGAL",
+      "title": "Términos y condiciones",
+      "intro": "Estructura provisional únicamente. El SOW requiere revisión legal antes del lanzamiento."
+    },
+    "calculator": {
+      "eyebrow": "CALCULADORA DE PRÉSTAMOS",
+      "title": "Estima un posible rango de préstamo según el valor de tu vehículo.",
+      "intro": "Esta calculadora es solo una estimación educativa. No constituye una decisión crediticia, cotización, compromiso ni oferta de crédito."
+    }
+  }
+}
