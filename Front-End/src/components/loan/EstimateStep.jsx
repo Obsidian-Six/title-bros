@@ -24,7 +24,7 @@ export default function EstimateStep({
 
   return (
     <div className="animate-[fadeUp_.5s_ease-out]">
-      <div className="eyebrow text-[#101512]">
+      <div className="eyebrow text-[var(--ink)]/35">
         {t("eyebrow")}
       </div>
 
@@ -71,9 +71,9 @@ export default function EstimateStep({
         </p>
       </div>
 
-      <div className="mt-7 rounded-3xl border border-black/[0.07] p-6 md:p-7">
+      <div className="mt-7 rounded-3xl border border-[var(--ink)] p-6 md:p-7">
         <div className="flex items-center justify-between">
-          <h3 className="font-black text-[#101512]">
+          <h3 className="font-black text-[var(--ink)]">
             {t("vehicleDetails")}
           </h3>
 
@@ -88,41 +88,41 @@ export default function EstimateStep({
 
         <div className="mt-6 grid gap-5 sm:grid-cols-2">
           <div>
-            <p className="text-xs text-black/35">
+            <p className="text-xs text-[var(--ink)]/35">
               {t("vehicle")}
             </p>
 
-            <p className="mt-1 font-bold text-[#101512]">
+            <p className="mt-1 font-bold text-[var(--ink)]">
               {form.year} {form.make} {form.model}
             </p>
           </div>
 
           <div>
-            <p className="text-xs text-black/35">
+            <p className="text-xs text-[var(--ink)]/35">
               {t("mileage")}
             </p>
 
-            <p className="mt-1 font-bold text-[#101512]">
+            <p className="mt-1 font-bold text-[var(--ink)]">
               {formatNumber(form.mileage)} {t("miles")}
             </p>
           </div>
 
           <div>
-            <p className="text-xs text-black/35">
+            <p className="text-xs text-[var(--ink)]/35">
               {t("condition")}
             </p>
 
-            <p className="mt-1 font-bold capitalize text-[#101512]">
+            <p className="mt-1 font-bold capitalize text-[var(--ink)]">
               {form.condition}
             </p>
           </div>
 
           <div>
-            <p className="text-xs text-black/35">
+            <p className="text-xs text-[var(--ink)]/35">
               {t("amountRequested")}
             </p>
 
-            <p className="mt-1 font-bold text-[#101512]">
+            <p className="mt-1 font-bold text-[var(--ink)]">
               {formatCurrency(form.desiredAmount)}
             </p>
           </div>
@@ -130,11 +130,11 @@ export default function EstimateStep({
       </div>
 
       <div className="mt-7 rounded-3xl border border-[#087a45]/15 bg-[#087a45]/[0.035] p-6 md:p-7">
-        <h3 className="text-xl font-black tracking-[-0.03em] text-[#101512]">
+        <h3 className="text-xl font-black tracking-[-0.03em] text-[var(--ink)]">
           {t("readyTitle")}
         </h3>
 
-        <p className="mt-2 max-w-xl text-sm leading-6 text-black/45">
+        <p className="mt-2 max-w-xl text-sm leading-6 text-[var(--ink)]/35">
           {t("readyDescription")}
         </p>
 

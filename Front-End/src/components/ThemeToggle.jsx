@@ -24,7 +24,7 @@ export default function ThemeToggle({ className = "" }) {
       onClick={toggleTheme}
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
       title={isDark ? "Switch to light mode" : "Switch to dark mode"}
-      className={`relative grid h-11 w-11 place-items-center rounded-full border border-0 bg-white/60 text-black/80 transition-all duration-300 hover:scale-105 hover:bg-white hover:text-black dark:border-white/15 dark:bg-white/10 dark:text-white/90 dark:hover:bg-white/20 dark:hover:text-white ${className}`}
+      className={`relative grid h-11 w-11 place-items-center rounded-full border border-0 bg-gray-100 text-black/80 transition-all duration-300 hover:scale-105 hover:bg-gray hover:text-black dark:border-white/15 dark:bg-white/10 dark:text-white/90 dark:hover:bg-white/20 dark:hover:text-white ${className}`}
     >
       <div className="relative h-5 w-5">
         <Sun

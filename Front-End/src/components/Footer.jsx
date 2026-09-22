@@ -9,11 +9,6 @@ import { useParams, usePathname } from "next/navigation";
 export default function Footer() {
   const pathname = usePathname();
 
-  // Hide the public customer footer on Admin CMS & Admin Login pages
-  if (pathname && pathname.includes("/admin")) {
-    return null;
-  }
-
   const t = useTranslations("footer");
   const { locale } = useParams();
   const localizedHref = (href) => {
@@ -23,6 +18,10 @@ export default function Footer() {
 
     return `/${locale}${href}`;
   };
+  // Hide the public customer footer on Admin CMS & Admin Login pages
+  if (pathname && pathname.includes("/admin")) {
+    return null;
+  }
 
   const exploreLinks = [
     {
@@ -153,6 +152,23 @@ export default function Footer() {
                   <MapPin size={16} className="mt-0.5 shrink-0" />
                   <span>{t("location")}</span>
                 </div>
+                <p className="text-xs text-white/50">
+                  <a
+                    href="https://skfb.ly/pMsSH"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    2010 Mercedes SLS AMG — Dave Love SketchFab
+                  </a>{" "}
+                  ·{" "}
+                  <a
+                    href="https://creativecommons.org/licenses/by/4.0/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    CC BY 4.0
+                  </a>
+                </p>
               </div>
             </div>
           </div>

@@ -5,7 +5,7 @@
       "highlight": "LOANS"
     },
     "call": "call",
-    "applyNow": "Apply Now",
+    "applyNow": "Pre Approval",
     "navItems": [
       { "label": "Process", "href": "/how-it-works" },
       { "label": "Calculator", "href": "/calculator" },
@@ -373,6 +373,9 @@
 
       "firstName": "First name",
       "firstNamePlaceholder": "John",
+      
+      "middleName": "Middle name",
+      "middleNamePlaceholder": "middle name",
 
       "lastName": "Last name",
       "lastNamePlaceholder": "Smith",
@@ -438,7 +441,7 @@
 
     "steps": {
       "vehicle": {
-        "title": "Vehicle",
+        "title": "Vehicle Infromation",
         "description": "Tell us about your vehicle",
         "fields": {
           "year": "Year",
@@ -448,17 +451,18 @@
         }
       },
       "personal": {
-        "title": "Personal",
+        "title": "Personal Information",
         "description": "Your contact information",
         "fields": {
           "firstName": "First name",
           "lastName": "Last name",
-          "phone": "Phone",
+          "middleName": "Middle name",
+          "phone": "Phone Number",
           "email": "Email"
         }
       },
       "loan": {
-        "title": "Loan",
+        "title": "Loan Information",
         "description": "What do you need?",
         "fields": {
           "amountRequested": "Amount requested",

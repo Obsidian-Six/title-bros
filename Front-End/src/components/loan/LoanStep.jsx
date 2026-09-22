@@ -23,15 +23,15 @@ export default function LoanStep({
 
   return (
     <div className="animate-[fadeUp_.5s_ease-out]">
-      <div className="eyebrow text-[#101512]">
+      <div className="eyebrow text-[var(--ink)]/35">
         {t("eyebrow")}
       </div>
 
-      <h2 className="mt-4 text-3xl font-black tracking-[-0.05em] md:text-4xl text-[#101512]">
+      <h2 className="mt-4 text-3xl font-black tracking-[-0.05em] md:text-4xl text-[var(--ink)]">
         {t("title")}
       </h2>
 
-      <p className="mt-3 max-w-xl text-sm leading-6 text-black/45">
+      <p className="mt-3 max-w-xl text-sm leading-6 text-[var(--ink)]/35">
         {t("description")}
       </p>
 
@@ -70,12 +70,12 @@ export default function LoanStep({
                   )
                 }
                 className={[
-                  "rounded-full border px-4 py-2.5",
-                  "text-sm font-bold transition-all text-[#101512]",
+                  "rounded-full border border-[var(--ink)] px-4 py-2.5",
+                  "text-sm font-bold transition-all text-[var(--ink)]",
 
                   selected
                     ? "border-[#087a45] bg-[#087a45] text-white"
-                    : "border-black/10 hover:border-black/25",
+                    : "border-[#087a45] hover:border-[var(--ink)]",
                 ].join(" ")}
               >
                 {formatCurrency(amount)}
@@ -88,11 +88,11 @@ export default function LoanStep({
       <div className="mt-10 rounded-3xl bg-black/[0.025] p-6 md:p-8">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-black/35">
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--ink)]/35">
               {t("potentialRange")}
             </p>
 
-            <p className="mt-2 text-3xl font-black tracking-[-0.04em] text-[#101512]">
+            <p className="mt-2 text-3xl font-black tracking-[-0.04em] text-[var(--ink)]">
               {formatCurrency(
                 estimate.low
               )}
@@ -139,7 +139,7 @@ export default function LoanStep({
           />
         </div>
 
-        <p className="mt-4 text-xs leading-5 text-black/40">
+        <p className="mt-4 text-xs leading-5 text-[var(--ink)]/35">
           {t("disclaimer")}
         </p>
       </div>

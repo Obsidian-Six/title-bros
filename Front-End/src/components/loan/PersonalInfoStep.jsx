@@ -17,15 +17,15 @@ export default function PersonalInfoStep({
 
   return (
     <div className="animate-[fadeUp_.5s_ease-out]">
-      <div className="eyebrow text-[#101512]">
+      <div className="eyebrow text-[var(--ink)]/35">
         {t("eyebrow")}
       </div>
 
-      <h2 className="mt-4 text-3xl font-black tracking-[-0.05em] text-[#101512] md:text-4xl">
+      <h2 className="mt-4 text-3xl font-black tracking-[-0.05em] md:text-4xl">
         {t("title")}
       </h2>
 
-      <p className="mt-3 max-w-xl text-sm leading-6 text-black/45">
+      <p className="mt-3 max-w-xl text-sm leading-6 text-[var(--ink)]/35">
         {t("description")}
       </p>
 

@@ -77,10 +77,6 @@ export default function Navbar() {
   }, []);
 
   // Hide the public customer navbar completely on Admin CMS & Admin Login pages
-  if (pathname && pathname.includes("/admin")) {
-    return null;
-  }
-
   const { locale } = useParams();
   const messages = useMessages();
 
@@ -93,6 +89,10 @@ export default function Navbar() {
 
     return `/${locale}${href}`;
   };
+  if (pathname && pathname.includes("/admin")) {
+    return null;
+  }
+
 
   return (
     <header className="fixed left-0 top-0 z-50 w-full px-3 py-3">
@@ -107,7 +107,7 @@ export default function Navbar() {
             <Image
               width={1000}
               height={1000}
-              src="/logo.jpg"
+              src="/images/TB.png"
               alt="Title Bros Loans"
               className="h-11 w-11 rounded-full bg-white object-contain"
             />

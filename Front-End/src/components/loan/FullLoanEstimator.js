@@ -214,7 +214,7 @@ export default function FullLoanEstimator() {
 
           {/* MAIN */}
 
-          <div className="rounded-[2rem] border border-black/[0.07] bg-white shadow-[0_25px_100px_rgba(0,0,0,0.07)] overflow-hidden">
+          <div className="glass rounded-[2rem] border border-black/[0.07] bg-white shadow-[0_25px_100px_rgba(0,0,0,0.07)] overflow-hidden">
 
             <div className="h-1.5 overflow-hidden rounded-t-[2rem] bg-black/[0.04]">
               <div
@@ -282,7 +282,7 @@ export default function FullLoanEstimator() {
                 <button
                   type="button"
                   onClick={() => setStep(2)}
-                  className="mt-6 text-sm font-bold text-black/40 transition-colors hover:text-black"
+                  className="mt-6 text-sm font-bold text-[var(--ink)]/35 transition-colors hover:text-[var(--ink)]"
                 >
                   ← {t("navigation.backToInformation")}
                 </button>

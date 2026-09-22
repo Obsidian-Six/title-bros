@@ -28,13 +28,13 @@ export default function VehicleStep({ form, errors, updateForm }) {
 
   return (
     <div className="animate-[fadeUp_.5s_ease-out]">
-      <div className="eyebrow text-[#101512]">{t("eyebrow")}</div>
+      <div className="eyebrow text-[var(--ink)]/35">{t("eyebrow")}</div>
 
-      <h2 className="mt-4 text-3xl font-black tracking-[-0.05em] text-[#101512] md:text-4xl">
+      <h2 className="mt-4 text-3xl font-black tracking-[-0.05em] text-[var(--black)] md:text-4xl">
         {t("title")}
       </h2>
 
-      <p className="mt-3 max-w-xl text-sm leading-6 text-black/45">
+      <p className="mt-3 max-w-xl text-sm leading-6 text-[var(--ink)]/35">
         {t("description")}
       </p>
 
@@ -106,7 +106,7 @@ export default function VehicleStep({ form, errors, updateForm }) {
       {/* CONDITION */}
 
       <div className="mt-8">
-        <label className="mb-3 block text-sm font-bold text-[#101512]">
+        <label className="mb-3 block text-sm uppercase font-bold text-[var(--ink)]/35">
           {t("vehicleCondition")}
         </label>
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
@@ -121,7 +121,7 @@ export default function VehicleStep({ form, errors, updateForm }) {
                 className={[
                   "rounded-2xl border p-4 text-left",
                   "transition-all duration-300",
-                  "hover:-translate-y-0.5",
+                  "hover:-translate-y-0.5 bg-white",
                   selected
                     ? "border-[#087a45] bg-[#087a45]/[0.05]"
                     : "border-black/[0.08] bg-white hover:border-black/20",
@@ -137,7 +137,7 @@ export default function VehicleStep({ form, errors, updateForm }) {
                       "h-4 w-4 rounded-full border-2",
                       selected
                         ? "border-[#087a45] bg-[#087a45] ring-2 ring-[#087a45]/15"
-                        : "border-black/15",
+                        : "border-black/15 ",
                     ].join(" ")}
                   />
                 </div>
