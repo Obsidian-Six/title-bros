@@ -13,21 +13,19 @@ import asyncHandler from '../utils/asyncHandler.js';
  * @access  Public / Authenticated
  */
 export const submitApplication = asyncHandler(async (req, res) => {
-  const {
-    year,
-    make,
-    model,
-    estimatedValue,
-    firstName,
-    lastName,
-    phone,
-    email,
-    amountRequested,
-    reasonForFunds,
-    employmentStatus,
-    zipCode,
-    urgency,
-  } = req.body;
+  const vehicleYear = req.body.year || req.body.vehicleYear || '';
+  const vehicleMake = req.body.make || req.body.vehicleMake || '';
+  const vehicleModel = req.body.model || req.body.vehicleModel || '';
+  const rawEstimatedValue = req.body.estimatedValue || req.body.estimate || 0;
+  const firstName = (req.body.firstName || '').trim();
+  const lastName = (req.body.lastName || '').trim();
+  const phone = (req.body.phone || '').trim();
+  const email = (req.body.email || '').toLowerCase().trim();
+  const rawAmountRequested = req.body.amountRequested || req.body.desiredAmount || req.body.amount || 0;
+  const reasonForFunds = req.body.reasonForFunds || req.body.loanPurpose || '';
+  const employmentStatus = req.body.employmentStatus || req.body.employment || '';
+  const zipCode = req.body.zipCode || req.body.zip || '';
+  const urgency = req.body.urgency || 'Immediately';
 
   // Clean numeric currency inputs (e.g. "$5,000" -> 5000)
   const parseNumeric = (val) => {
@@ -37,10 +35,10 @@ export const submitApplication = asyncHandler(async (req, res) => {
     return isNaN(num) ? 0 : num;
   };
 
-  const cleanAmountRequested = parseNumeric(amountRequested);
-  const cleanEstimatedValue = parseNumeric(estimatedValue);
+  const cleanAmountRequested = parseNumeric(rawAmountRequested);
+  const cleanEstimatedValue = parseNumeric(rawEstimatedValue);
 
-  if (!year || !make || !model || !firstName || !lastName || !phone || !email || cleanAmountRequested <= 0) {
+  if (!vehicleYear || !vehicleMake || !vehicleModel || !firstName || !lastName || !phone || !email || cleanAmountRequested <= 0) {
     throw new ApiError(400, 'Please complete all required vehicle, personal, and loan amount fields.');
   }
 
@@ -98,13 +96,13 @@ export const submitApplication = asyncHandler(async (req, res) => {
     zipCode: zipCode || '',
     employmentStatus: employmentStatus || '',
     vehicle: {
-      year: String(year).trim(),
-      make: make.trim(),
-      model: model.trim(),
+      year: String(vehicleYear).trim(),
+      make: vehicleMake.trim(),
+      model: vehicleModel.trim(),
       estimatedValue: cleanEstimatedValue,
-      mileage: req.body.mileage || '',
+      mileage: req.body.mileage || req.body.vehicleMileage || '',
       vin: req.body.vin || '',
-      trim: req.body.trim || '',
+      trim: req.body.trim || req.body.vehicleTrim || '',
     },
     amountRequested: cleanAmountRequested,
     reasonForFunds: reasonForFunds || '',
@@ -127,7 +125,7 @@ export const submitApplication = asyncHandler(async (req, res) => {
     channel: 'EMAIL',
     recipient: email.toLowerCase().trim(),
     subject: 'Title Bros Loan Application Received',
-    message: `Hello ${firstName}, your auto title loan application for your ${year} ${make} ${model} (#${newLoan._id.toString().slice(-6).toUpperCase()}) has been received. Our loan team is reviewing it now.`,
+    message: `Hello ${firstName}, your auto title loan application for your ${vehicleYear} ${vehicleMake} ${vehicleModel} (#${newLoan._id.toString().slice(-6).toUpperCase()}) has been received. Our loan team is reviewing it now.`,
     type: 'AUTOMATED',
     sentByName: 'Title Bros Auto-Bot',
     sentAt: new Date(),
