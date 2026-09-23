@@ -30,6 +30,10 @@ uploads/documents/*
 **/uploads/documents/*
 !uploads/documents/.gitkeep
 !**/uploads/documents/.gitkeep
+uploads/blogs/*
+**/uploads/blogs/*
+!uploads/blogs/.gitkeep
+!**/uploads/blogs/.gitkeep
 
 # Logs & Runtime
 *.log

@@ -10,6 +10,7 @@ import {
   reviewLoanDoc,
   getMyApplications,
   markLoanAsRead,
+  geocodeAddress,
 } from '../controllers/loanController.js';
 import { protect, optionalProtect } from '../middlewares/authMiddleware.js';
 import { restrictTo } from '../middlewares/roleMiddleware.js';
@@ -17,6 +18,9 @@ import uploadDocument from '../middlewares/uploadMiddleware.js';
 import { USER_ROLES } from '../models/User.js';
 
 const router = Router();
+
+// Public dynamic address geocoding (UK & Worldwide)
+router.get('/geocode', geocodeAddress);
 
 // Public / Authenticated loan submission
 router.post('/apply', optionalProtect, submitApplication);

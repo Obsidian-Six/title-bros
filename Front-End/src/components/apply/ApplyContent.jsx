@@ -26,6 +26,7 @@ import {
 import Reveal from "@/components/Reveal";
 
 import Field from "@/components/apply/Field";
+import AddressAutocomplete from "@/components/apply/AddressAutocomplete";
 import Steps from "@/components/apply/Steps";
 import { ReviewCard, ReviewItem } from "@/components/apply/ReviewCard";
 
@@ -670,22 +671,22 @@ function ApplyContent() {
     }
 
     /*
-     * State
+     * State / County (supports 2-letter codes or full region/county names e.g. CA, Greater London)
      */
     if (key === "state") {
       nextValue = String(value || "")
-        .toUpperCase()
-        .replace(/[^A-Z]/g, "")
-        .slice(0, 2);
+        .replace(/[^A-Za-zÀ-ÿ0-9' ._-]/g, "")
+        .slice(0, 50);
     }
 
     /*
-     * ZIP
+     * ZIP / Postal Code (supports UK postcodes like SW1A 1AA, US ZIPs 90210, and international codes)
      */
     if (key === "zipCode") {
       nextValue = String(value || "")
-        .replace(/[^\d-]/g, "")
-        .slice(0, 10);
+        .toUpperCase()
+        .replace(/[^A-Z0-9\s-]/g, "")
+        .slice(0, 12);
     }
 
     /*
@@ -945,22 +946,28 @@ function ApplyContent() {
       /*
        * City
        */
-      if (form.city && !NAME_REGEX.test(form.city.trim())) {
-        newErrors.city = "Enter a valid city name.";
+      if (form.city && !/^[A-Za-zÀ-ÿ0-9' .-]+$/.test(form.city.trim())) {
+        newErrors.city = "Enter a valid city or town name.";
       }
 
       /*
-       * State
+       * State / County - supports US 2-letter codes, UK counties (e.g. Greater London, Surrey), and worldwide regions
        */
-      if (form.state && !US_STATE_CODES.includes(form.state.toUpperCase())) {
-        newErrors.state = "Enter a valid 2-letter US state code.";
+      if (
+        form.state &&
+        !US_STATE_CODES.includes(form.state.toUpperCase()) &&
+        !/^[A-Za-zÀ-ÿ0-9' .-]+$/.test(form.state.trim())
+      ) {
+        newErrors.state = "Enter a valid state, county, or region name.";
       }
 
       /*
-       * ZIP
+       * Postal / ZIP Code - supports UK postcodes (e.g. SW1A 1AA, M1 1AE), US ZIPs (12345, 12345-6789), and international codes
        */
-      if (form.zipCode && !ZIP_REGEX.test(form.zipCode.trim())) {
-        newErrors.zipCode = "ZIP code must be 5 digits or ZIP+4.";
+      const POSTAL_REGEX =
+        /^(?:[A-Z]{1,2}[0-9][A-Z0-9]?\s?[0-9][A-Z]{2}|\d{5}(?:-\d{4})?|[A-Za-z0-9\s-]{3,10})$/i;
+      if (form.zipCode && !POSTAL_REGEX.test(form.zipCode.trim())) {
+        newErrors.zipCode = "Enter a valid postal or ZIP code.";
       }
     }
 
@@ -1540,8 +1547,42 @@ function ApplyContent() {
                             icon = <MapPin size={17} />;
                           }
 
-                          if (isPhone) {
-                            icon = <Smartphone size={17} />;
+                          if (isAddress) {
+                            return (
+                              <AddressAutocomplete
+                                key={key}
+                                label={label}
+                                value={form.address}
+                                onChange={(val) => update("address", val)}
+                                onSelectAddress={({
+                                  address,
+                                  street,
+                                  city,
+                                  state,
+                                  zipCode,
+                                }) => {
+                                  setForm((prev) => ({
+                                    ...prev,
+                                    address: address || prev.address,
+                                    street: street || prev.street,
+                                    city: city || prev.city,
+                                    state: state || prev.state,
+                                    zipCode: zipCode || prev.zipCode,
+                                  }));
+                                  setErrors((prev) => {
+                                    const clean = { ...prev };
+                                    delete clean.address;
+                                    delete clean.street;
+                                    delete clean.city;
+                                    delete clean.state;
+                                    delete clean.zipCode;
+                                    return clean;
+                                  });
+                                }}
+                                error={errors.address}
+                                className="sm:col-span-2"
+                              />
+                            );
                           }
 
                           return (

@@ -281,6 +281,85 @@ export const loanService = {
     });
   },
 
+  // ==========================================
+  // BLOG POST MANAGEMENT
+  // ==========================================
+
+  async getPublicBlogs(params = {}) {
+    const query = new URLSearchParams();
+    if (params.category && params.category !== 'All') query.append('category', params.category);
+    if (params.search) query.append('search', params.search);
+    if (params.page) query.append('page', params.page);
+    if (params.limit) query.append('limit', params.limit);
+    const qs = query.toString() ? `?${query.toString()}` : '';
+    return request(`/blogs${qs}`, { method: 'GET' });
+  },
+
+  async getBlogBySlug(slug) {
+    return request(`/blogs/${encodeURIComponent(slug)}`, { method: 'GET' });
+  },
+
+  async getAdminBlogs(params = {}) {
+    const query = new URLSearchParams();
+    if (params.status && params.status !== 'All') query.append('status', params.status);
+    if (params.category && params.category !== 'All') query.append('category', params.category);
+    if (params.search) query.append('search', params.search);
+    if (params.page) query.append('page', params.page);
+    if (params.limit) query.append('limit', params.limit);
+    const qs = query.toString() ? `?${query.toString()}` : '';
+    return request(`/blogs/admin/all${qs}`, { method: 'GET' });
+  },
+
+  async createBlog(data) {
+    return request('/blogs', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  async updateBlog(id, data) {
+    return request(`/blogs/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  },
+
+  async deleteBlog(id) {
+    return request(`/blogs/${id}`, {
+      method: 'DELETE',
+    });
+  },
+
+  async uploadBlogImage(file) {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    const url = `${API_BASE_URL}/blogs/upload-image`;
+    const token = getAuthToken();
+    const headers = {};
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers,
+      body: formData,
+      credentials: 'include',
+    });
+
+    const json = await response.json().catch(() => ({
+      success: false,
+      message: 'Unable to parse server response.',
+    }));
+
+    if (!response.ok) {
+      const error = new Error(json.message || 'Image upload failed');
+      error.statusCode = response.status;
+      throw error;
+    }
+
+    return json;
+  },
+
   // Helper utility for generating document URLs dynamically
   getDocumentUrl(path) {
     return getDocumentUrl(path);

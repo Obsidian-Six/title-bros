@@ -14,6 +14,7 @@ import userRoutes from './userRoutes.js';
 import loanRoutes from './loanRoutes.js';
 import customerRoutes from './customerRoutes.js';
 import communicationRoutes from './communicationRoutes.js';
+import blogRoutes from './blogRoutes.js';
 import ApiResponse from '../utils/ApiResponse.js';
 
 const router = Router();
@@ -40,5 +41,6 @@ router.use('/users', userRoutes);
 router.use('/loans', loanRoutes);
 router.use('/customers', customerRoutes);
 router.use('/communications', communicationRoutes);
+router.use('/blogs', blogRoutes);
 
 export default router;

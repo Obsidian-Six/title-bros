@@ -44,9 +44,12 @@ import {
   X,
   Calendar,
   Trash2,
+  BookOpen,
+  Edit3,
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import loanService from "@/services/loanService";
+import loanService, { getDocumentUrl } from "@/services/loanService";
+import BlogBuilderModal from "@/components/admin/BlogBuilderModal";
 
 export default function AdminDashboardPage() {
   const { locale } = useParams();
@@ -126,6 +129,31 @@ export default function AdminDashboardPage() {
     role: "ADMIN",
   });
 
+  // Blog posts CMS state
+  const [blogs, setBlogs] = useState([]);
+  const [blogStatusFilter, setBlogStatusFilter] = useState("All");
+  const [blogSearchQuery, setBlogSearchQuery] = useState("");
+  const [blogModalOpen, setBlogModalOpen] = useState(false);
+  const [editingBlog, setEditingBlog] = useState(null);
+
+  const loadBlogs = useCallback(async () => {
+    try {
+      const res = await loanService.getAdminBlogs({
+        status: blogStatusFilter,
+        search: blogSearchQuery,
+      });
+      if (res.success) setBlogs(res.data.posts || []);
+    } catch (err) {
+      console.error("Failed to load admin blogs:", err);
+    }
+  }, [blogStatusFilter, blogSearchQuery]);
+
+  useEffect(() => {
+    if (isAuthenticated && isAdmin) {
+      loadBlogs();
+    }
+  }, [loadBlogs, isAuthenticated, isAdmin]);
+
   // ==========================================
   // DATA FETCHING FUNCTIONS
   // ==========================================
@@ -151,12 +179,14 @@ export default function AdminDashboardPage() {
         const staffRes = await loanService.getAllAdmins();
         if (staffRes.success) setStaffList(staffRes.data.admins);
       }
+
+      await loadBlogs();
     } catch (err) {
       if (!isBackground) setActionError(err.message || "Failed to load dashboard data.");
     } finally {
       if (!isBackground) setLoading(false);
     }
-  }, [loanStatusFilter, loanSearchQuery, customerSearch, commChannelFilter, isSuperAdmin]);
+  }, [loanStatusFilter, loanSearchQuery, customerSearch, commChannelFilter, isSuperAdmin, loadBlogs]);
 
   // Initial load and background real-time auto-polling every 4 seconds
   useEffect(() => {
@@ -503,6 +533,23 @@ export default function AdminDashboardPage() {
             >
               <MessageSquare size={16} />
               <span>Communications</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab("blogs")}
+              className={`flex items-center gap-2.5 rounded-2xl px-4 py-3 text-xs font-bold transition whitespace-nowrap ${
+                activeTab === "blogs"
+                  ? "bg-[var(--green)] text-white shadow-md shadow-[var(--green)]/20"
+                  : "text-[var(--muted)] hover:bg-[var(--paper)] hover:text-[var(--ink)]"
+              }`}
+            >
+              <BookOpen size={16} />
+              <span>Blog Posts</span>
+              {blogs.length > 0 && (
+                <span className="ml-auto rounded-full bg-black/10 px-2 py-0.5 text-[10px] font-bold text-[var(--ink)]">
+                  {blogs.length}
+                </span>
+              )}
             </button>
 
             {isSuperAdmin ? (
@@ -1067,6 +1114,189 @@ export default function AdminDashboardPage() {
                   </tbody>
                 </table>
               </div>
+            </div>
+          )}
+
+          {/* ============================================================== */}
+          {/* TAB 6: BLOG POSTS MANAGEMENT (CMS)                             */}
+          {/* ============================================================== */}
+          {activeTab === "blogs" && (
+            <div className="space-y-6">
+              {/* Header bar */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                  <h1 className="text-xl font-black text-[var(--ink)]">
+                    Blog Posts & Content CMS
+                  </h1>
+                  <p className="text-xs text-[var(--muted)]">
+                    Create, edit, and organize dynamic articles with cover images, live character count, and reorderable blocks.
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => {
+                    setEditingBlog(null);
+                    setBlogModalOpen(true);
+                  }}
+                  className="flex items-center gap-2 rounded-2xl bg-[#087a45] px-5 py-2.5 text-xs font-black text-white shadow-lg shadow-[#087a45]/20 transition hover:bg-[#066237]"
+                >
+                  <Plus size={16} />
+                  <span>New Blog Post</span>
+                </button>
+              </div>
+
+              {/* Filters & Search */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                  {["All", "PUBLISHED", "DRAFT"].map((st) => (
+                    <button
+                      key={st}
+                      onClick={() => setBlogStatusFilter(st)}
+                      className={`rounded-xl px-3.5 py-1.5 text-xs font-bold transition ${
+                        blogStatusFilter === st
+                          ? "bg-[var(--ink)] text-white"
+                          : "bg-[var(--paper)] text-[var(--muted)] hover:text-[var(--ink)]"
+                      }`}
+                    >
+                      {st === "All" ? "All Posts" : st === "PUBLISHED" ? "Published" : "Drafts"}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="relative w-full sm:w-64">
+                  <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted)]" />
+                  <input
+                    type="text"
+                    value={blogSearchQuery}
+                    onChange={(e) => setBlogSearchQuery(e.target.value)}
+                    placeholder="Search blogs..."
+                    className="h-9 w-full rounded-xl border border-[var(--line)] bg-[var(--white)] pl-9 pr-3 text-xs outline-none focus:border-[#087a45]"
+                  />
+                </div>
+              </div>
+
+              {/* Blog Posts Grid */}
+              {blogs.length === 0 ? (
+                <div className="rounded-3xl border border-[var(--line)] bg-[var(--white)] py-16 text-center">
+                  <BookOpen size={40} className="mx-auto text-[var(--muted)]/40" />
+                  <h3 className="mt-3 text-sm font-bold text-[var(--ink)]">No blog posts found</h3>
+                  <p className="mt-1 text-xs text-[var(--muted)]">
+                    Get started by clicking &quot;New Blog Post&quot; to publish your first article.
+                  </p>
+                  <button
+                    onClick={() => {
+                      setEditingBlog(null);
+                      setBlogModalOpen(true);
+                    }}
+                    className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-[#087a45] px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-[#066237]"
+                  >
+                    <Plus size={14} /> Create Post
+                  </button>
+                </div>
+              ) : (
+                <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+                  {blogs.map((b) => (
+                    <div
+                      key={b._id}
+                      className="group flex flex-col justify-between overflow-hidden rounded-3xl border border-[var(--line)] bg-[var(--white)] shadow-sm transition hover:shadow-lg"
+                    >
+                      <div>
+                        {/* Cover Image */}
+                        <div className="relative h-44 w-full overflow-hidden bg-[var(--paper)]">
+                          <img
+                            src={getDocumentUrl(b.coverImage)}
+                            alt={b.title}
+                            className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                          />
+                          <div className="absolute left-3 top-3">
+                            <span
+                              className={`rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-wider backdrop-blur-md ${
+                                b.status === "PUBLISHED"
+                                  ? "bg-emerald-600/90 text-white"
+                                  : "bg-amber-600/90 text-white"
+                              }`}
+                            >
+                              {b.status}
+                            </span>
+                          </div>
+                          <div className="absolute right-3 top-3">
+                            <span className="rounded-full bg-black/60 px-2.5 py-1 text-[10px] font-bold text-white backdrop-blur-md">
+                              {b.category}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Card Content */}
+                        <div className="p-5">
+                          <div className="flex items-center justify-between text-[11px] text-[var(--muted)]">
+                            <span>{new Date(b.createdAt).toLocaleDateString()}</span>
+                            <span>{b.readTime || "4 min read"}</span>
+                          </div>
+
+                          <h3 className="mt-2 text-base font-black leading-tight text-[var(--ink)] line-clamp-2">
+                            {b.title}
+                          </h3>
+
+                          {/* Truncated description with character awareness */}
+                          <p className="mt-2 text-xs leading-relaxed text-[var(--muted)] line-clamp-3">
+                            {b.description}
+                          </p>
+
+                          <div className="mt-3 flex items-center gap-2 text-[11px] font-semibold text-[var(--muted)]">
+                            <span className="rounded-md bg-[#087a45]/10 px-2 py-0.5 text-[10px] font-bold text-[#087a45]">
+                              {b.blocks?.length || 0} Dynamic Blocks
+                            </span>
+                            <span>•</span>
+                            <span>{b.views || 0} views</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Card Action Footer */}
+                      <div className="flex items-center justify-between border-t border-[var(--line)] bg-[var(--paper)]/40 px-5 py-3 text-xs">
+                        <Link
+                          href={`/${locale}/blog/${b.slug}`}
+                          target="_blank"
+                          className="flex items-center gap-1 font-bold text-[var(--muted)] hover:text-[#087a45]"
+                        >
+                          <span>Live Post</span>
+                          <ArrowUpRight size={14} />
+                        </Link>
+
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => {
+                              setEditingBlog(b);
+                              setBlogModalOpen(true);
+                            }}
+                            className="flex items-center gap-1 rounded-lg border border-[var(--line)] bg-white px-2.5 py-1 font-bold text-[var(--ink)] transition hover:bg-[#087a45] hover:text-white"
+                          >
+                            <Edit3 size={13} />
+                            <span>Edit</span>
+                          </button>
+
+                          <button
+                            onClick={async () => {
+                              if (confirm(`Are you sure you want to delete "${b.title}"?`)) {
+                                try {
+                                  await loanService.deleteBlog(b._id);
+                                  loadBlogs();
+                                } catch (err) {
+                                  alert(err.message || "Failed to delete blog post");
+                                }
+                              }
+                            }}
+                            className="flex h-7 w-7 items-center justify-center rounded-lg border border-red-200 text-red-500 transition hover:bg-red-600 hover:text-white"
+                            title="Delete Blog"
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </main>
@@ -1740,6 +1970,23 @@ export default function AdminDashboardPage() {
           </div>
         </div>
       )}
+
+      {/* ============================================================== */}
+      {/* BLOG POST BUILDER / CMS MODAL                                  */}
+      {/* ============================================================== */}
+      <BlogBuilderModal
+        isOpen={blogModalOpen}
+        initialData={editingBlog}
+        onClose={() => {
+          setBlogModalOpen(false);
+          setEditingBlog(null);
+        }}
+        onSaved={() => {
+          setBlogModalOpen(false);
+          setEditingBlog(null);
+          loadBlogs();
+        }}
+      />
     </div>
   );
 }

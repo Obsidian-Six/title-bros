@@ -585,3 +585,153 @@ export const markLoanAsRead = asyncHandler(async (req, res) => {
 
   res.status(200).json(new ApiResponse(200, loan, 'Loan marked as read.'));
 });
+
+/**
+ * @desc    Dynamic geocoding proxy (Worldwide & United Kingdom coverage)
+ * @route   GET /api/v1/loans/geocode
+ * @access  Public
+ */
+export const geocodeAddress = asyncHandler(async (req, res) => {
+  const { q } = req.query;
+  if (!q || q.trim().length < 2) {
+    return res.status(200).json(new ApiResponse(200, [], 'Query too short'));
+  }
+
+  const queryText = q.trim();
+  const results = [];
+  const seen = new Set();
+
+  const isUKPostcodeLike = /^[A-Z]{1,2}[0-9][A-Z0-9]?\s?[0-9]?[A-Z]{0,2}$/i.test(queryText);
+
+  // 1. If query looks like a UK postcode, query postcodes.io first
+  if (isUKPostcodeLike) {
+    try {
+      const cleanPc = queryText.replace(/\s+/g, '');
+      const pcRes = await fetch(`https://api.postcodes.io/postcodes?q=${encodeURIComponent(cleanPc)}&limit=5`, {
+        signal: AbortSignal.timeout(3000),
+      });
+      if (pcRes.ok) {
+        const pcData = await pcRes.json();
+        if (Array.isArray(pcData.result)) {
+          for (const item of pcData.result) {
+            const pc = item.postcode;
+            const city = item.admin_district || item.parish || 'London';
+            const state = item.region || item.admin_county || 'Greater London';
+            const country = item.country || 'United Kingdom';
+            const key = `${pc}-${city}`.toLowerCase();
+            if (!seen.has(key)) {
+              seen.add(key);
+              results.push({
+                id: `pc-${item.postcode}`,
+                primary: `${pc}, ${city}`,
+                secondary: `${state}, ${country}`,
+                fullText: `${pc}, ${city}, ${state}, ${country}`,
+                source: 'postcodes.io',
+                parsed: {
+                  street: '',
+                  city,
+                  state,
+                  zipCode: pc,
+                  country,
+                },
+              });
+            }
+          }
+        }
+      }
+    } catch (e) {
+      // Ignore
+    }
+  }
+
+  // 2. Open-Meteo Fast Global Geocoding (super fast, sub-100ms)
+  try {
+    const omRes = await fetch(
+      `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(queryText)}&count=5&language=en&format=json`,
+      { signal: AbortSignal.timeout(3000) }
+    );
+    if (omRes.ok) {
+      const omData = await omRes.json();
+      if (Array.isArray(omData.results)) {
+        for (const item of omData.results) {
+          const city = item.name || '';
+          const state = item.admin2 || item.admin1 || '';
+          const country = item.country || '';
+          const postcode = item.postcodes?.[0] || '';
+          const key = `${city}-${state}-${country}`.toLowerCase();
+          if (!seen.has(key)) {
+            seen.add(key);
+            const secondary = [state, country].filter(Boolean).join(', ');
+            results.push({
+              id: `om-${item.id}`,
+              primary: city,
+              secondary,
+              fullText: `${city}${secondary ? `, ${secondary}` : ''}`,
+              source: 'open-meteo',
+              parsed: {
+                street: '',
+                city,
+                state,
+                zipCode: postcode,
+                country,
+              },
+            });
+          }
+        }
+      }
+    }
+  } catch (e) {
+    // Ignore
+  }
+
+  // 3. Photon OpenStreetMap Geocoding (streets, venues, postcodes)
+  try {
+    const phRes = await fetch(
+      `https://photon.komoot.io/api/?q=${encodeURIComponent(queryText)}&limit=6`,
+      {
+        headers: { 'User-Agent': 'TitleBrosApp/1.0' },
+        signal: AbortSignal.timeout(4000),
+      }
+    );
+    if (phRes.ok) {
+      const phData = await phRes.json();
+      if (Array.isArray(phData.features)) {
+        for (const feat of phData.features) {
+          const p = feat.properties || {};
+          const house = p.housenumber ? `${p.housenumber} ` : '';
+          const street = p.street || p.name || '';
+          const city = p.city || p.town || p.district || p.suburb || '';
+          const state = p.state || p.county || '';
+          const postcode = p.postcode || '';
+          const country = p.country || '';
+
+          const primary = `${house}${street}`.trim() || p.name || city;
+          const secondary = [city, state, postcode, country].filter(Boolean).join(', ');
+          const key = `${primary}-${city}-${postcode}`.toLowerCase();
+
+          if (primary && !seen.has(key)) {
+            seen.add(key);
+            results.push({
+              id: `ph-${p.osm_id || Math.random()}`,
+              primary,
+              secondary,
+              fullText: `${primary}${secondary ? `, ${secondary}` : ''}`,
+              source: 'photon',
+              parsed: {
+                street: `${house}${p.street || p.name || ''}`.trim(),
+                city,
+                state,
+                zipCode: postcode,
+                country,
+              },
+            });
+          }
+        }
+      }
+    }
+  } catch (e) {
+    // Ignore
+  }
+
+  return res.status(200).json(new ApiResponse(200, results.slice(0, 8), 'Geocode suggestions loaded.'));
+});
