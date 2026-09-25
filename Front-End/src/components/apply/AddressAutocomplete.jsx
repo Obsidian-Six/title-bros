@@ -4,8 +4,14 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { MapPin, Loader2, Search, X } from "lucide-react";
 import { Loader as GoogleMapsLoader } from "@googlemaps/js-api-loader";
 
+const SERVER_URL =
+  process.env.NEXT_PUBLIC_SERVER_URL ||
+  (typeof window !== "undefined" && !window.location.hostname.includes("localhost")
+    ? "https://title-bros-backend.onrender.com"
+    : "http://localhost:5000");
+
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
+  process.env.NEXT_PUBLIC_API_URL || `${SERVER_URL}/api/v1`;
 
 /**
  * ==============================================================================

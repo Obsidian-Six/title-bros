@@ -243,13 +243,14 @@ export default function Navbar() {
                 )}
               </div>
             ) : (
-              <Link
-                href={localizedHref("/login")}
-                className="btn-ghost !min-h-[44px] !px-4 flex items-center gap-1.5 text-xs font-bold text-[var(--ink)] transition hover:text-[var(--green)]"
+              <button
+                type="button"
+                onClick={() => openAuthModal("login")}
+                className="btn-ghost !min-h-[44px] !px-4 flex items-center gap-1.5 text-xs font-bold text-[var(--ink)] transition hover:text-[var(--green)] cursor-pointer"
               >
                 <LogIn size={15} />
                 <span>Sign In</span>
-              </Link>
+              </button>
             )}
 
             <a
@@ -342,14 +343,17 @@ export default function Navbar() {
                     </button>
                   </>
                 ) : (
-                  <Link
-                    href={localizedHref("/login")}
-                    onClick={() => setOpen(false)}
-                    className="flex items-center justify-center gap-2 rounded-2xl border border-[var(--line)] bg-[var(--paper)] py-3 text-xs font-bold text-[var(--ink)]"
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setOpen(false);
+                      openAuthModal("login");
+                    }}
+                    className="flex w-full items-center justify-center gap-2 rounded-2xl border border-[var(--line)] bg-[var(--paper)] py-3 text-xs font-bold text-[var(--ink)] cursor-pointer"
                   >
                     <LogIn size={16} />
                     <span>Sign In to Account</span>
-                  </Link>
+                  </button>
                 )}
 
                 <Link
