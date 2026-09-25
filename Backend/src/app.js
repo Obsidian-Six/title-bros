@@ -131,28 +131,40 @@ app.use(
    2. CORS
 ============================================================================= */
 
-// Frontend URLs allowed to communicate with this API
+// Normalize URLs so trailing "/" does not cause CORS mismatch
+const normalizeOrigin = (url = "") => {
+  return url.trim().replace(/\/+$/, "");
+};
+
+// Your frontend URLs
 const allowedOrigins = [
   "https://title-bros-new-temp.vercel.app",
   "http://localhost:3000",
   "http://127.0.0.1:3000",
 ];
 
-// Also allow CLIENT_URL from Render environment variables
+// Add CLIENT_URL from Render environment variables
 if (process.env.CLIENT_URL) {
   const envOrigins = process.env.CLIENT_URL
     .split(",")
-    .map((url) => url.trim())
+    .map(normalizeOrigin)
     .filter(Boolean);
 
-  envOrigins.forEach((url) => {
-    if (!allowedOrigins.includes(url)) {
-      allowedOrigins.push(url);
+  envOrigins.forEach((origin) => {
+    if (!allowedOrigins.includes(origin)) {
+      allowedOrigins.push(origin);
     }
   });
 }
 
-console.log("Allowed CORS origins:", allowedOrigins);
+// Normalize all origins
+const normalizedAllowedOrigins = allowedOrigins.map(normalizeOrigin);
+
+// console.log("==========================================");
+// console.log("CORS Allowed Origins:");
+// console.log(normalizedAllowedOrigins);
+// console.log("CLIENT_URL:", process.env.CLIENT_URL || "NOT SET");
+// console.log("==========================================");
 
 app.use(
   cors({
@@ -163,31 +175,20 @@ app.use(
         return callback(null, true);
       }
 
-      if (allowedOrigins.includes(origin)) {
+      const normalizedOrigin = normalizeOrigin(origin);
+
+      // console.log("CORS Request Origin:", normalizedOrigin);
+
+      if (normalizedAllowedOrigins.includes(normalizedOrigin)) {
+        // console.log("CORS ALLOWED:", normalizedOrigin);
         return callback(null, true);
       }
 
-      console.error("CORS blocked origin:", origin);
+      // console.error("CORS BLOCKED:", normalizedOrigin);
 
       return callback(
-        new Error(`CORS blocked origin: ${origin}`)
+        new Error(`CORS blocked origin: ${normalizedOrigin}`)
       );
-      // Allow requests with no origin (like mobile apps, curl, postman)
-      if (!origin) return callback(null, true);
-
-      try {
-        const normalizedOrigin = origin.replace(/\/$/, '');
-        const host = new URL(origin).hostname;
-
-        // Allow explicit origins, local dev, or any *.vercel.app deployment
-        if (allowedOrigins.includes(normalizedOrigin) || /\.vercel\.app$/.test(host) || host === 'localhost') {
-          return callback(null, true);
-        }
-      } catch (e) {
-        // Continue to rejection
-      }
-
-      callback(new Error(`Blocked by CORS policy: ${origin}`));
     },
 
     credentials: true,
@@ -206,6 +207,8 @@ app.use(
       "Authorization",
       "X-Requested-With",
     ],
+
+    optionsSuccessStatus: 204,
   })
 );
 
