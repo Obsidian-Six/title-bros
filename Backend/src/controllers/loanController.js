@@ -190,14 +190,16 @@ export const getAdminStats = asyncHandler(async (req, res) => {
     LoanApplication.find()
       .sort({ createdAt: -1 })
       .limit(10)
-      .select('firstName lastName email phone vehicle amountRequested status isRead createdAt'),
+      .select('firstName lastName email phone vehicle amountRequested status isRead createdAt')
+      .lean(),
     LoanApplication.find({
       status: { $in: [LOAN_STATUS.NEW, LOAN_STATUS.UNDER_REVIEW] },
       createdAt: { $lte: twentyFourHoursAgo },
     })
       .sort({ createdAt: 1 })
       .limit(5)
-      .select('firstName lastName vehicle amountRequested createdAt status isRead'),
+      .select('firstName lastName vehicle amountRequested createdAt status isRead')
+      .lean(),
   ]);
 
   res.status(200).json(
@@ -252,7 +254,8 @@ export const getAllLoans = asyncHandler(async (req, res) => {
     LoanApplication.find(filter)
       .sort({ createdAt: -1 })
       .skip(skip)
-      .limit(Number(limit)),
+      .limit(Number(limit))
+      .lean(),
     LoanApplication.countDocuments(filter),
   ]);
 
@@ -556,11 +559,11 @@ export const getMyApplications = asyncHandler(async (req, res) => {
     ],
   };
 
-  const userLoans = await LoanApplication.find(filter).sort({ createdAt: -1 });
+  const userLoans = await LoanApplication.find(filter).sort({ createdAt: -1 }).lean();
 
   // If staff/superadmin is viewing the portal for testing, include all loans if they have no personal customer loans
   if (userLoans.length === 0 && (req.user.role === USER_ROLES.ADMIN || req.user.role === USER_ROLES.SUPER_ADMIN)) {
-    const allLoans = await LoanApplication.find({}).sort({ createdAt: -1 }).limit(20);
+    const allLoans = await LoanApplication.find({}).sort({ createdAt: -1 }).limit(20).lean();
     return res.status(200).json(new ApiResponse(200, allLoans, 'Your applications loaded.'));
   }
 

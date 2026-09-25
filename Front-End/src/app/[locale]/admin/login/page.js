@@ -14,7 +14,7 @@
  * - Modern responsive layout styled with Title Bros design tokens
  */
 
-import { useState, useTransition } from "react";
+import { useState, useEffect, useTransition } from "react";
 import Link from "next/link";
 import { useRouter, useParams } from "next/navigation";
 import Image from "next/image";
@@ -46,10 +46,16 @@ export default function AdminLoginPage() {
   const [isPending, startTransition] = useTransition();
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [successInfo, setSuccessInfo] = useState(null);
+
+  // Automatically redirect directly to dashboard if already authenticated as Admin
+  useEffect(() => {
+    if (isAuthenticated && isAdmin) {
+      router.replace(`/${locale}/admin/dashboard`);
+    }
+  }, [isAuthenticated, isAdmin, locale, router]);
 
   /**
-   * Handle Admin Login Submission
+   * Handle Admin Login Submission - directly opens dashboard upon success
    */
   const handleAdminLogin = async (e) => {
     e.preventDefault();
@@ -63,67 +69,27 @@ export default function AdminLoginPage() {
       });
 
       if (response.success && response.data) {
-        setSuccessInfo({
-          name: response.data.user.name,
-          role: response.data.user.role,
-        });
-
-        // Trigger direct redirect to admin dashboard
-        setTimeout(() => {
-          window.location.href = `/${locale}/admin/dashboard`;
-        }, 800);
+        // Direct, instant redirect into admin dashboard - no options screen
+        router.replace(`/${locale}/admin/dashboard`);
+        return;
       }
     } catch (err) {
       setErrorMessage(
         err.message ||
           "Administrative access denied. Verify your credentials or permissions."
       );
-    } finally {
       setSubmitting(false);
     }
   };
 
-  // If already authenticated as an Admin/SuperAdmin
+  // If already authenticated as an Admin/SuperAdmin, show clean loading state while redirecting
   if (isAuthenticated && isAdmin) {
     return (
-      <main className="min-h-screen flex items-center justify-center px-4 py-28 bg-[var(--paper)]">
-        <div className="w-full max-w-md rounded-3xl border border-[var(--line)] bg-[var(--white)] p-8 text-center shadow-xl">
-          <div className="mx-auto mb-4 grid h-16 w-16 place-items-center rounded-2xl bg-[var(--green)]/10 text-[var(--green)]">
-            <ShieldCheck size={36} />
-          </div>
-          <h1 className="text-xl font-black text-[var(--ink)]">
-            Administrator Authenticated
-          </h1>
-          <p className="mt-2 text-sm text-[var(--muted)]">
-            Welcome back, <strong className="text-[var(--ink)]">{user?.name}</strong> (
-            <span className="font-semibold text-[var(--green)]">{user?.role}</span>).
-          </p>
-
-          <div className="mt-6 space-y-3">
-            <Link
-              href={`/${locale}/admin/dashboard`}
-              className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--green)] py-3 text-sm font-bold text-white shadow-md transition hover:bg-[var(--green-dark)]"
-            >
-              <span>Go to Admin Dashboard</span>
-              <ArrowRight size={16} />
-            </Link>
-
-            <a
-              href={`/${locale}`}
-              className="w-full inline-flex items-center justify-center gap-2 rounded-2xl border border-[var(--line)] py-2.5 text-xs font-bold text-[var(--ink)] transition hover:bg-[var(--paper)]"
-            >
-              <span>Return to Main Site</span>
-            </a>
-
-            <button
-              type="button"
-              onClick={() => logout()}
-              className="w-full rounded-2xl border border-[var(--line)] py-2.5 text-xs font-bold text-[var(--muted)] transition hover:text-red-600 hover:border-red-300"
-            >
-              End Administrative Session (Logout)
-            </button>
-          </div>
-        </div>
+      <main className="min-h-screen flex flex-col items-center justify-center px-4 py-28 bg-[var(--paper)]">
+        <Loader2 size={36} className="animate-spin text-[var(--green)]" />
+        <p className="mt-3 text-xs font-bold uppercase tracking-wider text-[var(--muted)]">
+          Redirecting to Admin Dashboard...
+        </p>
       </main>
     );
   }
@@ -171,16 +137,6 @@ export default function AdminLoginPage() {
               <div className="mb-5 flex items-start gap-2.5 rounded-xl border border-red-500/20 bg-red-50 p-3.5 text-xs font-medium text-red-700 dark:bg-red-950/40 dark:text-red-300">
                 <AlertCircle size={16} className="mt-0.5 shrink-0" />
                 <span>{errorMessage}</span>
-              </div>
-            )}
-
-            {/* Success Alert */}
-            {successInfo && (
-              <div className="mb-5 flex items-start gap-2.5 rounded-xl border border-[var(--green)]/20 bg-emerald-50 p-3.5 text-xs font-medium text-[var(--green-dark)] dark:bg-emerald-950/40 dark:text-emerald-300">
-                <ShieldCheck size={16} className="mt-0.5 shrink-0" />
-                <span>
-                  Authenticated as <strong>{successInfo.name}</strong> ({successInfo.role}). Initializing workspace...
-                </span>
               </div>
             )}
 

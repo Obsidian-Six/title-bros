@@ -545,11 +545,6 @@ export default function AdminDashboardPage() {
             >
               <BookOpen size={16} />
               <span>Blog Posts</span>
-              {blogs.length > 0 && (
-                <span className="ml-auto rounded-full bg-black/10 px-2 py-0.5 text-[10px] font-bold text-[var(--ink)]">
-                  {blogs.length}
-                </span>
-              )}
             </button>
 
             {isSuperAdmin ? (

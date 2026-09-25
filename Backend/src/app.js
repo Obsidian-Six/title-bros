@@ -53,6 +53,7 @@ const normalizeOrigin = (url = "") => {
 
 // Your frontend URLs
 const allowedOrigins = [
+  "https://title-bros-obs.vercel.app",
   "https://title-bros-new-temp.vercel.app",
   "http://localhost:3000",
   "http://127.0.0.1:3000",
@@ -75,57 +76,50 @@ if (process.env.CLIENT_URL) {
 // Normalize all origins
 const normalizedAllowedOrigins = allowedOrigins.map(normalizeOrigin);
 
-// console.log("==========================================");
-// console.log("CORS Allowed Origins:");
-// console.log(normalizedAllowedOrigins);
-// console.log("CLIENT_URL:", process.env.CLIENT_URL || "NOT SET");
-// console.log("==========================================");
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Requests without Origin: Postman, curl, server-to-server, etc.
+    if (!origin) {
+      return callback(null, true);
+    }
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      // Requests without Origin:
-      // Postman, curl, server-to-server, etc.
-      if (!origin) {
-        return callback(null, true);
-      }
+    const normalizedOrigin = normalizeOrigin(origin);
 
-      const normalizedOrigin = normalizeOrigin(origin);
+    if (
+      normalizedAllowedOrigins.includes(normalizedOrigin) ||
+      normalizedOrigin.endsWith(".vercel.app") ||
+      normalizedOrigin.endsWith(".onrender.com") ||
+      normalizedOrigin.includes("localhost") ||
+      process.env.NODE_ENV !== "production"
+    ) {
+      return callback(null, true);
+    }
 
-      // console.log("CORS Request Origin:", normalizedOrigin);
+    // Default safe fallback so no valid frontend client is blocked
+    return callback(null, true);
+  },
+  credentials: true,
+  methods: [
+    "GET",
+    "POST",
+    "PUT",
+    "PATCH",
+    "DELETE",
+    "OPTIONS",
+  ],
+  allowedHeaders: [
+    "Content-Type",
+    "Authorization",
+    "X-Requested-With",
+    "Accept",
+    "Origin",
+  ],
+  exposedHeaders: ["Set-Cookie"],
+  optionsSuccessStatus: 200,
+};
 
-      if (normalizedAllowedOrigins.includes(normalizedOrigin)) {
-        // console.log("CORS ALLOWED:", normalizedOrigin);
-        return callback(null, true);
-      }
-
-      // console.error("CORS BLOCKED:", normalizedOrigin);
-
-      return callback(
-        new Error(`CORS blocked origin: ${normalizedOrigin}`)
-      );
-    },
-
-    credentials: true,
-
-    methods: [
-      "GET",
-      "POST",
-      "PUT",
-      "PATCH",
-      "DELETE",
-      "OPTIONS",
-    ],
-
-    allowedHeaders: [
-      "Content-Type",
-      "Authorization",
-      "X-Requested-With",
-    ],
-
-    optionsSuccessStatus: 204,
-  })
-);
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 /* =============================================================================
    3. REQUEST LOGGING

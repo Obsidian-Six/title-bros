@@ -32,12 +32,29 @@ function calculateReadTime(description, blocks = []) {
   return `${minutes} min read`;
 }
 
+// High-performance in-memory cache for public blogs
+const blogCache = new Map();
+const CACHE_TTL_MS = 60 * 1000; // 60 seconds
+
+export function clearBlogCache() {
+  blogCache.clear();
+}
+
 /**
  * Public: Get all published blog posts
  * GET /api/v1/blogs
  */
 export const getAllPublishedBlogs = asyncHandler(async (req, res) => {
   const { category, search, page = 1, limit = 12 } = req.query;
+
+  const cacheKey = `${category || 'All'}_${(search || '').trim().toLowerCase()}_${page}_${limit}`;
+  const cached = blogCache.get(cacheKey);
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL_MS) {
+    res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=120');
+    return res.status(200).json(
+      new ApiResponse(200, cached.data, 'Published blog posts retrieved successfully (cached)')
+    );
+  }
 
   const query = { status: 'PUBLISHED' };
 
@@ -57,28 +74,32 @@ export const getAllPublishedBlogs = asyncHandler(async (req, res) => {
   const limitNum = Math.max(1, Math.min(50, parseInt(limit, 10)));
   const skip = (pageNum - 1) * limitNum;
 
-  const [posts, total] = await Promise.all([
+  const [posts, total, categories] = await Promise.all([
     BlogPost.find(query)
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limitNum)
       .lean(),
     BlogPost.countDocuments(query),
+    BlogPost.distinct('category', { status: 'PUBLISHED' }),
   ]);
 
-  // Extract available unique categories
-  const categories = await BlogPost.distinct('category', { status: 'PUBLISHED' });
+  const responseData = {
+    posts,
+    total,
+    page: pageNum,
+    totalPages: Math.ceil(total / limitNum) || 1,
+    categories: ['All', ...categories],
+  };
 
+  // Cache response for super-fast retrieval
+  blogCache.set(cacheKey, { data: responseData, timestamp: Date.now() });
+
+  res.setHeader('Cache-Control', 'public, max-age=60, stale-while-revalidate=120');
   return res.status(200).json(
     new ApiResponse(
       200,
-      {
-        posts,
-        total,
-        page: pageNum,
-        totalPages: Math.ceil(total / limitNum) || 1,
-        categories: ['All', ...categories],
-      },
+      responseData,
       'Published blog posts retrieved successfully'
     )
   );
@@ -246,6 +267,8 @@ export const createBlog = asyncHandler(async (req, res) => {
     tags: Array.isArray(tags) ? tags : [],
   });
 
+  clearBlogCache();
+
   return res.status(201).json(
     new ApiResponse(201, newPost, 'Blog post created successfully')
   );
@@ -314,6 +337,7 @@ export const updateBlog = asyncHandler(async (req, res) => {
   post.readTime = readTime || calculateReadTime(post.description, post.blocks);
 
   await post.save();
+  clearBlogCache();
 
   return res.status(200).json(
     new ApiResponse(200, post, 'Blog post updated successfully')
@@ -331,6 +355,8 @@ export const deleteBlog = asyncHandler(async (req, res) => {
   if (!post) {
     throw new ApiError(404, 'Blog post not found');
   }
+
+  clearBlogCache();
 
   return res.status(200).json(
     new ApiResponse(200, null, 'Blog post deleted successfully')

@@ -111,5 +111,12 @@ const loanApplicationSchema = new mongoose.Schema(
   }
 );
 
+// High-speed compound indexes for underwriting queries and customer lookups
+loanApplicationSchema.index({ status: 1, createdAt: -1 });
+loanApplicationSchema.index({ customer: 1, createdAt: -1 });
+loanApplicationSchema.index({ email: 1, createdAt: -1 });
+loanApplicationSchema.index({ isRead: 1 });
+loanApplicationSchema.index({ createdAt: -1 });
+
 const LoanApplication = mongoose.model('LoanApplication', loanApplicationSchema);
 export default LoanApplication;
