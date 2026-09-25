@@ -36,8 +36,14 @@ app.use(
 );
 
 // 2. CORS Configuration
+const configuredClientUrls = (process.env.CLIENT_URL || '')
+  .split(',')
+  .map((url) => url.trim().replace(/\/$/, ''))
+  .filter(Boolean);
+
 const allowedOrigins = [
-  process.env.CLIENT_URL || 'http://localhost:3000',
+  ...configuredClientUrls,
+  'http://localhost:3000',
   'http://127.0.0.1:3000',
 ];
 
@@ -45,11 +51,21 @@ app.use(
   cors({
     origin: (origin, callback) => {
       // Allow requests with no origin (like mobile apps, curl, postman)
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error('Blocked by CORS policy'));
+      if (!origin) return callback(null, true);
+
+      try {
+        const normalizedOrigin = origin.replace(/\/$/, '');
+        const host = new URL(origin).hostname;
+
+        // Allow explicit origins, local dev, or any *.vercel.app deployment
+        if (allowedOrigins.includes(normalizedOrigin) || /\.vercel\.app$/.test(host) || host === 'localhost') {
+          return callback(null, true);
+        }
+      } catch (e) {
+        // Continue to rejection
       }
+
+      callback(new Error(`Blocked by CORS policy: ${origin}`));
     },
     credentials: true, // Allow cookies to be sent across origins
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],

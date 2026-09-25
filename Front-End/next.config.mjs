@@ -12,7 +12,22 @@ const withNextIntl = createNextIntlPlugin(
 );
 
 const nextConfig = {
-  /* your existing config */
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "title-bros-backend.onrender.com",
+      },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
+      {
+        protocol: "https",
+        hostname: "*.onrender.com",
+      },
+    ],
+  },
 };
 
 export default withNextIntl(nextConfig);
