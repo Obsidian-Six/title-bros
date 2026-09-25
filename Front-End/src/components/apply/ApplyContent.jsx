@@ -1891,7 +1891,7 @@ function ApplyContent() {
                     <button
                       type="button"
                       onClick={resetApplication}
-                      className="rounded-2xl border border-[var(--line)] bg-white px-5 py-3.5 text-xs font-bold text-[#000] transition-all hover:text-white hover:bg-[var(--paper)]"
+                      className="rounded-2xl border border-[var(--line)] bg-white px-5 py-3.5 text-xs font-bold text-[#000] transition-all hover:text-white hover:bg-[var(--ink)]"
                     >
                       Submit Another Vehicle
                     </button>

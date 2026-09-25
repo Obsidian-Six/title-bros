@@ -151,7 +151,7 @@ export default function ProfileModal({ isOpen, onClose }) {
                 <button
                   type="button"
                   onClick={() => setIsEditing(true)}
-                  className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-[var(--ink)] py-3 text-xs font-bold text-[var(--paper)] hover:bg-black transition"
+                  className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-[var(--ink)] py-3 text-xs font-bold text-[var(--paper)] hover:text-[var(--black)] hover:bg-black transition"
                 >
                   <Edit2 size={14} />
                   <span>Edit Details</span>

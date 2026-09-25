@@ -1675,52 +1675,52 @@ function applyFrontPlateOffset(root) {
   // ---------------------------------------------
 
   if (DEBUG_FRONT_PLATE) {
-    console.log(
-      "========================================"
-    );
+    // console.log(
+    //   "========================================"
+    // );
 
-    console.log(
-      "[TITLE BROS] FRONT PLATE FOUND"
-    );
+    // console.log(
+    //   "[TITLE BROS] FRONT PLATE FOUND"
+    // );
 
-    console.log(
-      "[TITLE BROS] Mesh:",
-      plate.name
-    );
+    // console.log(
+    //   "[TITLE BROS] Mesh:",
+    //   plate.name
+    // );
 
-    console.log(
-      "[TITLE BROS] Material:",
-      Array.isArray(plate.material)
-        ? plate.material.map(
-            (material) =>
-              material?.name
-          )
-        : plate.material?.name
-    );
+    // console.log(
+    //   "[TITLE BROS] Material:",
+    //   Array.isArray(plate.material)
+    //     ? plate.material.map(
+    //         (material) =>
+    //           material?.name
+    //       )
+    //     : plate.material?.name
+    // );
 
-    console.log(
-      "[TITLE BROS] Original Position:",
-      basePosition
-    );
+    // console.log(
+    //   "[TITLE BROS] Original Position:",
+    //   basePosition
+    // );
 
-    console.log(
-      "[TITLE BROS] Current Offset:",
-      FRONT_PLATE_OFFSET
-    );
+    // console.log(
+    //   "[TITLE BROS] Current Offset:",
+    //   FRONT_PLATE_OFFSET
+    // );
 
-    console.log(
-      "[TITLE BROS] Rotation Offset:",
-      FRONT_PLATE_ROTATION_OFFSET
-    );
+    // console.log(
+    //   "[TITLE BROS] Rotation Offset:",
+    //   FRONT_PLATE_ROTATION_OFFSET
+    // );
 
-    console.log(
-      "[TITLE BROS] Scale:",
-      FRONT_PLATE_SCALE
-    );
+    // console.log(
+    //   "[TITLE BROS] Scale:",
+    //   FRONT_PLATE_SCALE
+    // );
 
-    console.log(
-      "========================================"
-    );
+    // console.log(
+    //   "========================================"
+    // );
   }
 }
 
