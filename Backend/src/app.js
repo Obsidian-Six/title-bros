@@ -172,6 +172,22 @@ app.use(
       return callback(
         new Error(`CORS blocked origin: ${origin}`)
       );
+      // Allow requests with no origin (like mobile apps, curl, postman)
+      if (!origin) return callback(null, true);
+
+      try {
+        const normalizedOrigin = origin.replace(/\/$/, '');
+        const host = new URL(origin).hostname;
+
+        // Allow explicit origins, local dev, or any *.vercel.app deployment
+        if (allowedOrigins.includes(normalizedOrigin) || /\.vercel\.app$/.test(host) || host === 'localhost') {
+          return callback(null, true);
+        }
+      } catch (e) {
+        // Continue to rejection
+      }
+
+      callback(new Error(`Blocked by CORS policy: ${origin}`));
     },
 
     credentials: true,
