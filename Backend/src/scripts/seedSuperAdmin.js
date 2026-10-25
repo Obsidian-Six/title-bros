@@ -80,6 +80,29 @@ const seedData = async () => {
       customerMap[b.email] = user._id;
     }
 
+    // Update existing seeded loans with loan types
+    await LoanApplication.updateOne(
+      { email: 'marcus.r@example.com' },
+      { $set: { loanType: 'title-loan' } }
+    );
+
+    await LoanApplication.updateOne(
+      { email: 'emily.w@example.com' },
+      { $set: { loanType: 'personal-loan' } }
+    );
+
+    await LoanApplication.updateOne(
+      { email: 'david.k@example.com' },
+      { $set: { loanType: 'title-loan' } }
+    );
+
+    await LoanApplication.updateOne(
+      { email: 'james.w@example.com' },
+      { $set: { loanType: 'personal-loan' } }
+    );
+
+    console.log('[Seeder] Existing sample loans updated with loan types.');
+
     // 4. Seed Loan Applications for each status if none exist
     const existingLoansCount = await LoanApplication.countDocuments();
     if (existingLoansCount <= 1) {
@@ -90,6 +113,7 @@ const seedData = async () => {
         customer: customerMap['marcus.r@example.com'],
         firstName: 'Marcus',
         lastName: 'Rodriguez',
+        loanType: 'title-loan',
         email: 'marcus.r@example.com',
         phone: '(702) 555-0188',
         vehicle: {
@@ -123,6 +147,7 @@ const seedData = async () => {
         customer: customerMap['emily.w@example.com'],
         firstName: 'Emily',
         lastName: 'Watson',
+        loanType: 'personal-loan',
         email: 'emily.w@example.com',
         phone: '(702) 555-0177',
         vehicle: {
@@ -149,6 +174,7 @@ const seedData = async () => {
         customer: customerMap['david.k@example.com'],
         firstName: 'David',
         lastName: 'Kim',
+        loanType: 'title-loan',
         email: 'david.k@example.com',
         phone: '(702) 555-0199',
         vehicle: {
@@ -181,6 +207,7 @@ const seedData = async () => {
         customer: customerMap['james.w@example.com'],
         firstName: 'James',
         lastName: 'Wilson',
+        loanType: 'personal-loan',
         email: 'james.w@example.com',
         phone: '(702) 555-0122',
         vehicle: {

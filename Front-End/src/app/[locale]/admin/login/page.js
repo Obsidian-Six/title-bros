@@ -69,6 +69,14 @@ export default function AdminLoginPage() {
       });
 
       if (response.success && response.data) {
+        // Enforce route-based login: block SUPER_ADMIN from using the normal admin login route
+        if (response.data.user?.role === "SUPER_ADMIN") {
+          await logout();
+          setErrorMessage("Super Admin accounts must use the /super-admin/login portal.");
+          setSubmitting(false);
+          return;
+        }
+
         // Direct, instant redirect into admin dashboard - no options screen
         router.replace(`/${locale}/admin/dashboard`);
         return;
@@ -145,26 +153,7 @@ export default function AdminLoginPage() {
               <span className="block text-[11px] font-bold uppercase tracking-wider text-[var(--muted)] mb-2">
                 Quick Test Credentials (Click to Autofill)
               </span>
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setFormData({
-                      email: "superadmin@titlebros.com",
-                      password: "SuperAdmin@2026!",
-                    });
-                    setErrorMessage("");
-                  }}
-                  className="flex flex-col items-start rounded-xl border border-amber-500/30 bg-amber-500/10 p-2 text-left transition hover:border-amber-500 hover:bg-amber-500/15"
-                >
-                  <span className="text-[11px] font-black text-amber-700 dark:text-amber-400">
-                    👑 Super Admin
-                  </span>
-                  <span className="text-[10px] text-[var(--muted)] truncate w-full">
-                    superadmin@titlebros.com
-                  </span>
-                </button>
-
+              <div className="grid grid-cols-1 gap-2">
                 <button
                   type="button"
                   onClick={() => {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 
 import StepNumber from "@/components/ui/StepNumber";
 import LoanSteps from "./LoanSteps";
@@ -9,6 +9,10 @@ import SubmitModal from "./SubmitModal";
 import { calculateLoanEstimate } from "@/app/lib/loan/calculator";
 import { validateStep } from "@/app/lib/loan/validation";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/context/AuthContext";
+import { Lock, LogIn, UserPlus } from "lucide-react";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 
 // const STEPS = [
 //   "Vehicle",
@@ -41,10 +45,29 @@ const INITIAL_FORM = {
 
 export default function FullLoanEstimator() {
   const t = useTranslations("calculator");
+  const { user, isAuthenticated, openAuthModal } = useAuth();
+  const { locale } = useParams();
 
   const [step, setStep] = useState(0);
 
   const [form, setForm] = useState(INITIAL_FORM);
+
+  // Pre-fill user data
+  useEffect(() => {
+    if (!user) return;
+
+    const nameParts = (user.name || "").trim().split(" ");
+    const firstName = nameParts[0] || "";
+    const lastName = nameParts.slice(1).join(" ") || "";
+
+    setForm((previous) => ({
+      ...previous,
+      firstName: previous.firstName || firstName,
+      lastName: previous.lastName || lastName,
+      email: previous.email || user.email || "",
+      phone: previous.phone || user.phone || "",
+    }));
+  }, [user]);
 
   const [errors, setErrors] = useState({});
 
@@ -131,6 +154,57 @@ export default function FullLoanEstimator() {
     setStep(0);
     setShowSubmitModal(false);
   };
+
+  if (!isAuthenticated) {
+    return (
+      <section className="bg-[#f7f8f4] pb-24 pt-24">
+        <div className="container-x mx-auto max-w-xl">
+          <div className="glass rounded-[34px] p-8 text-center shadow-xl md:p-12">
+            <div className="mx-auto mb-6 grid h-16 w-16 place-items-center rounded-2xl bg-[var(--green)]/10 text-[var(--green)]">
+              <Lock size={32} />
+            </div>
+
+            <h1 className="h3 text-[var(--ink)]">Sign In Required to Estimate & Apply</h1>
+
+            <p className="mt-3 text-sm leading-6 text-black/60">
+              To estimate your auto title loan, please sign in to your Title Bros
+              account or create a new one.
+            </p>
+
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <button
+                type="button"
+                onClick={() => openAuthModal("login")}
+                className="btn-primary flex flex-1 items-center justify-center gap-2"
+              >
+                <LogIn size={16} />
+                Sign In to Account
+              </button>
+
+              <button
+                type="button"
+                onClick={() => openAuthModal("register")}
+                className="flex flex-1 items-center justify-center gap-2 rounded-2xl border border-[var(--line)] bg-[var(--white)] py-3.5 text-xs font-bold text-[var(--ink)] transition hover:bg-[var(--paper)]"
+              >
+                <UserPlus size={16} className="text-[var(--green)]" />
+                Create New Account
+              </button>
+            </div>
+
+            <div className="mt-6 border-t border-[var(--line)] pt-4 text-xs text-[var(--muted)]">
+              Title Bros Staff?{" "}
+              <Link
+                href={`/${locale}/admin/login`}
+                className="font-bold text-[var(--green)] hover:underline"
+              >
+                Staff Operations Login
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section

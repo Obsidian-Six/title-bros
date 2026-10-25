@@ -6,6 +6,10 @@ import { generateToken } from '../utils/token.js';
 import ApiError from '../utils/ApiError.js';
 import ApiResponse from '../utils/ApiResponse.js';
 import asyncHandler from '../utils/asyncHandler.js';
+import { sendEmail } from '../utils/emailService.js';
+import RepaymentSchedule from "../models/RepaymentSchedule.js";
+import { generateRepaymentSchedule } from "../utils/repaymentSchedule.js";
+import mongoose from "mongoose";
 
 /**
  * @desc    Submit a new loan application (Public or Customer)
@@ -26,6 +30,7 @@ export const submitApplication = asyncHandler(async (req, res) => {
   const employmentStatus = req.body.employmentStatus || req.body.employment || '';
   const zipCode = req.body.zipCode || req.body.zip || '';
   const urgency = req.body.urgency || 'Immediately';
+  const loanType = req.body.loanType || 'title-loan';
 
   // Clean numeric currency inputs (e.g. "$5,000" -> 5000)
   const parseNumeric = (val) => {
@@ -38,10 +43,32 @@ export const submitApplication = asyncHandler(async (req, res) => {
   const cleanAmountRequested = parseNumeric(rawAmountRequested);
   const cleanEstimatedValue = parseNumeric(rawEstimatedValue);
 
-  if (!vehicleYear || !vehicleMake || !vehicleModel || !firstName || !lastName || !phone || !email || cleanAmountRequested <= 0) {
-    throw new ApiError(400, 'Please complete all required vehicle, personal, and loan amount fields.');
+  if (!['title-loan', 'personal-loan'].includes(loanType)) {
+    throw new ApiError(400, 'Invalid loan type. Must be title-loan or personal-loan.');
   }
 
+  // if (!vehicleYear || !vehicleMake || !vehicleModel || !firstName || !lastName || !phone || !email || cleanAmountRequested <= 0) {
+  //   throw new ApiError(400, 'Please complete all required vehicle, personal, and loan amount fields.');
+  // }
+  // Common required fields for both loan types
+  if (!firstName || !lastName || !phone || !email || cleanAmountRequested <= 0
+  ) {
+    throw new ApiError(
+      400,
+      'Please complete all required personal and loan amount fields.'
+    );
+  }
+
+  // Vehicle information is required ONLY for Title Loan
+  if (
+    loanType === 'title-loan' &&
+    (!vehicleYear || !vehicleMake || !vehicleModel)
+  ) {
+    throw new ApiError(
+      400,
+      'Please complete all required vehicle fields for a Title Loan.'
+    );
+  }
   // 1. Resolve customer account link
   let customerUser = null;
   let customerId = null;
@@ -89,21 +116,65 @@ export const submitApplication = asyncHandler(async (req, res) => {
   // 2. Create the loan application in MongoDB
   const newLoan = await LoanApplication.create({
     customer: customerId,
+    loanType,
     firstName: firstName.trim(),
     lastName: lastName.trim(),
     phone: phone.trim(),
     email: email.toLowerCase().trim(),
     zipCode: zipCode || '',
     employmentStatus: employmentStatus || '',
-    vehicle: {
-      year: String(vehicleYear).trim(),
-      make: vehicleMake.trim(),
-      model: vehicleModel.trim(),
-      estimatedValue: cleanEstimatedValue,
-      mileage: req.body.mileage || req.body.vehicleMileage || '',
-      vin: req.body.vin || '',
-      trim: req.body.trim || req.body.vehicleTrim || '',
-    },
+    // vehicle: {
+    //   year: String(vehicleYear).trim(),
+    //   make: vehicleMake.trim(),
+    //   model: vehicleModel.trim(),
+    //   estimatedValue: cleanEstimatedValue,
+    //   mileage: req.body.mileage || req.body.vehicleMileage || '',
+    //   vin: req.body.vin || '',
+    //   trim: req.body.trim || req.body.vehicleTrim || '',
+    // },
+    vehicle:
+  loanType === 'title-loan'
+    ? {
+        year: String(vehicleYear).trim(),
+
+        make: vehicleMake.trim(),
+
+        model: vehicleModel.trim(),
+
+        trim:
+          req.body.trim ||
+          req.body.vehicleTrim ||
+          '',
+
+        estimatedValue:
+          cleanEstimatedValue,
+
+        mileage:
+          req.body.mileage ||
+          req.body.vehicleMileage ||
+          '',
+
+        vin:
+          req.body.vin || '',
+
+        condition:
+          req.body.condition || '',
+
+        color:
+          req.body.color || '',
+
+        titleStatus:
+          req.body.titleStatus || '',
+
+        existingLien:
+          req.body.existingLien || '',
+
+        lienAmount:
+          parseNumeric(
+            req.body.lienAmount || 0
+          ),
+      }
+    : undefined,
     amountRequested: cleanAmountRequested,
     reasonForFunds: reasonForFunds || '',
     urgency: urgency || 'Immediately',
@@ -119,17 +190,49 @@ export const submitApplication = asyncHandler(async (req, res) => {
   });
 
   // 3. Log automated confirmation communication
+  const confirmationMessage = `Hello ${firstName}, your auto title loan application for your ${vehicleYear} ${vehicleMake} ${vehicleModel} (#${newLoan._id.toString().slice(-6).toUpperCase()}) has been received. Our loan team is reviewing it now.`;
   await CommunicationLog.create({
     customer: customerId,
     loan: newLoan._id,
     channel: 'EMAIL',
     recipient: email.toLowerCase().trim(),
     subject: 'Title Bros Loan Application Received',
-    message: `Hello ${firstName}, your auto title loan application for your ${vehicleYear} ${vehicleMake} ${vehicleModel} (#${newLoan._id.toString().slice(-6).toUpperCase()}) has been received. Our loan team is reviewing it now.`,
+    message: confirmationMessage,
     type: 'AUTOMATED',
     sentByName: 'Title Bros Auto-Bot',
     sentAt: new Date(),
   });
+
+  // 4. Actually send the email using Nodemailer
+  try {
+    await sendEmail({
+      email: email.toLowerCase().trim(),
+      subject: 'Title Bros Loan Application Received',
+      html: `
+        <h3>Application Received</h3>
+        <p>${confirmationMessage}</p>
+        <p>Thank you for choosing Title Bros.</p>
+      `,
+      text: confirmationMessage,
+    });
+
+    // Also notify Admin
+    const adminEmail = process.env.SMTP_USER || 'admin@titlebros.com';
+    await sendEmail({
+      email: adminEmail,
+      subject: `New Loan Application: ${firstName} ${lastName}`,
+      html: `
+        <h3>New Loan Application Received</h3>
+        <p><strong>Applicant:</strong> ${firstName} ${lastName}</p>
+        <p><strong>Vehicle:</strong> ${vehicleYear} ${vehicleMake} ${vehicleModel}</p>
+        <p><strong>Requested Amount:</strong> $${cleanAmountRequested}</p>
+        <p><strong>Phone:</strong> ${phone}</p>
+        <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/en/admin/loans/${newLoan._id}">Review Application</a>
+      `,
+    });
+  } catch (err) {
+    console.error('Failed to dispatch loan confirmation emails:', err);
+  }
 
   res.status(201).json(
     new ApiResponse(
@@ -278,37 +381,91 @@ export const getAllLoans = asyncHandler(async (req, res) => {
  * @route   GET /api/v1/loans/:id
  * @access  Private
  */
-export const getLoanById = asyncHandler(async (req, res) => {
-  const loan = await LoanApplication.findById(req.params.id)
-    .populate('customer', 'name email phone status createdAt')
-    .populate('statusHistory.changedBy', 'name role')
-    .populate('internalNotes.author', 'name role');
+// export const getLoanById = asyncHandler(async (req, res) => {
+//   const loan = await LoanApplication.findById(req.params.id)
+//     .populate('customer', 'name email phone status createdAt')
+//     .populate('statusHistory.changedBy', 'name role')
+//     .populate('internalNotes.author', 'name role');
 
-  if (!loan) {
-    throw new ApiError(404, 'Loan application not found.');
+//   if (!loan) {
+//     throw new ApiError(404, 'Loan application not found.');
+//   }
+
+//   // Customer authorization check: customers can only view their own loan
+//   if (
+//     req.user.role === USER_ROLES.CUSTOMER &&
+//     loan.customer?._id?.toString() !== req.user._id.toString() &&
+//     loan.email !== req.user.email
+//   ) {
+//     throw new ApiError(403, 'Unauthorized to view this loan application.');
+//   }
+
+//   // When staff reads the loan, mark isRead as true so notification clears
+//   if (
+//     (req.user.role === USER_ROLES.ADMIN || req.user.role === USER_ROLES.SUPER_ADMIN) &&
+//     !loan.isRead
+//   ) {
+//     loan.isRead = true;
+//     await loan.save();
+//   }
+
+//   res.status(200).json(new ApiResponse(200, loan, 'Loan details retrieved.'));
+// });
+export const getLoanById = asyncHandler(async (req, res) => {
+  // console.log("========================================");
+  // console.log("GET SINGLE LOAN DEBUG");
+  // console.log("Requested ID:", req.params.id);
+  // console.log("Valid ObjectId:", mongoose.Types.ObjectId.isValid(req.params.id));
+  // console.log("Database:", mongoose.connection.name);
+  // console.log("Collection:", LoanApplication.collection.name);
+
+  const totalLoans = await LoanApplication.countDocuments();
+
+  const exactLoan = await LoanApplication.findOne({
+    _id: req.params.id,
+  }).lean();
+
+  // console.log("Total LoanApplications:", totalLoans);
+  // console.log("Exact loan found:", !!exactLoan);
+
+  if (exactLoan) {
+    // console.log("Exact loan _id:", exactLoan._id);
+    // console.log("Loan type:", exactLoan.loanType);
+    // console.log("Customer:", exactLoan.firstName, exactLoan.lastName);
   }
 
-  // Customer authorization check: customers can only view their own loan
+  // console.log("========================================");
+
+  const loan = await LoanApplication.findById(req.params.id)
+    .populate("customer", "name email phone status createdAt")
+    .populate("statusHistory.changedBy", "name role")
+    .populate("internalNotes.author", "name role");
+
+  if (!loan) {
+    throw new ApiError(404, "Loan application not found.");
+  }
+
   if (
     req.user.role === USER_ROLES.CUSTOMER &&
     loan.customer?._id?.toString() !== req.user._id.toString() &&
     loan.email !== req.user.email
   ) {
-    throw new ApiError(403, 'Unauthorized to view this loan application.');
+    throw new ApiError(403, "Unauthorized to view this loan application.");
   }
 
-  // When staff reads the loan, mark isRead as true so notification clears
   if (
-    (req.user.role === USER_ROLES.ADMIN || req.user.role === USER_ROLES.SUPER_ADMIN) &&
+    (req.user.role === USER_ROLES.ADMIN ||
+      req.user.role === USER_ROLES.SUPER_ADMIN) &&
     !loan.isRead
   ) {
     loan.isRead = true;
     await loan.save();
   }
 
-  res.status(200).json(new ApiResponse(200, loan, 'Loan details retrieved.'));
+  res
+    .status(200)
+    .json(new ApiResponse(200, loan, "Loan details retrieved."));
 });
-
 /**
  * @desc    Update loan status (Approve, Reject, Request Docs, Under Review)
  * @route   PATCH /api/v1/loans/:id/status
@@ -332,44 +489,304 @@ export const updateLoanStatus = asyncHandler(async (req, res) => {
   let auditNote = note || `Status updated from ${previousStatus} to ${status}`;
 
   // 1. Approval Logic
+  // if (status === LOAN_STATUS.APPROVED) {
+  //   if (!approvedTerms?.loanAmount || !approvedTerms?.interestRate || !approvedTerms?.repaymentMonths) {
+  //     throw new ApiError(400, 'Approval requires loan amount, interest rate, and repayment terms in months.');
+  //   }
+
+  //   const principal = Number(approvedTerms.loanAmount);
+  //   const rate = Number(approvedTerms.interestRate) / 100 / 12;
+  //   const months = Number(approvedTerms.repaymentMonths);
+
+  //   // Standard amortization monthly payment calculation
+  //   const monthly =
+  //     rate > 0
+  //       ? (principal * rate * Math.pow(1 + rate, months)) / (Math.pow(1 + rate, months) - 1)
+  //       : principal / months;
+
+  //   loan.approvedTerms = {
+  //     loanAmount: principal,
+  //     interestRate: Number(approvedTerms.interestRate),
+  //     repaymentMonths: months,
+  //     monthlyPayment: Math.round(monthly * 100) / 100,
+  //     approvedAt: new Date(),
+  //     approvedBy: req.user._id,
+  //   };
+  //   loan.rejectionReason = '';
+
+  //   auditNote = `Approved for $${principal} at ${approvedTerms.interestRate}% over ${months} months.`;
+
+  //   // Log approval notice
+  //   await CommunicationLog.create({
+  //     customer: loan.customer,
+  //     loan: loan._id,
+  //     channel: 'EMAIL',
+  //     recipient: loan.email,
+  //     subject: 'Congratulations! Your Title Bros Loan is Approved',
+  //     message: `Great news! Your auto title loan for your ${loan.vehicle.year} ${loan.vehicle.make} ${loan.vehicle.model} has been APPROVED for $${principal}. Next step: Visit our office to sign your agreement and pick up your funds!`,
+  //     type: 'AUTOMATED',
+  //     sentBy: req.user._id,
+  //     sentByName: req.user.name,
+  //     sentAt: new Date(),
+  //   });
+  // }
+
+  // 1. Approval Logic
   if (status === LOAN_STATUS.APPROVED) {
-    if (!approvedTerms?.loanAmount || !approvedTerms?.interestRate || !approvedTerms?.repaymentMonths) {
-      throw new ApiError(400, 'Approval requires loan amount, interest rate, and repayment terms in months.');
+    if (
+      !approvedTerms?.loanAmount ||
+      approvedTerms?.interestRate === undefined ||
+      !approvedTerms?.repaymentMonths
+    ) {
+      throw new ApiError(
+        400,
+        "Approval requires loan amount, interest rate, and repayment terms in months."
+      );
     }
 
     const principal = Number(approvedTerms.loanAmount);
-    const rate = Number(approvedTerms.interestRate) / 100 / 12;
+    const interestRate = Number(approvedTerms.interestRate);
     const months = Number(approvedTerms.repaymentMonths);
 
-    // Standard amortization monthly payment calculation
-    const monthly =
-      rate > 0
-        ? (principal * rate * Math.pow(1 + rate, months)) / (Math.pow(1 + rate, months) - 1)
-        : principal / months;
+    if (!Number.isFinite(principal) || principal <= 0) {
+      throw new ApiError(400, "Loan amount must be greater than zero.");
+    }
+
+    if (!Number.isFinite(interestRate) || interestRate < 0) {
+      throw new ApiError(400, "Interest rate must be a valid non-negative number.");
+    }
+
+    if (!Number.isInteger(months) || months <= 0) {
+      throw new ApiError(
+        400,
+        "Repayment months must be a positive whole number."
+      );
+    }
+
+    // ---------------------------------------------------------------------------
+    // Repayment Plan
+    // ---------------------------------------------------------------------------
+
+    const paymentPlanType =
+      approvedTerms.paymentPlanType || "installment";
+
+    const frequency =
+      paymentPlanType === "single"
+        ? "single"
+        : approvedTerms.frequency || "monthly";
+
+    const numberOfPayments =
+      paymentPlanType === "single"
+        ? 1
+        : Number(
+          approvedTerms.numberOfPayments || months
+        );
+
+    const firstDueDate = approvedTerms.firstDueDate
+      ? new Date(approvedTerms.firstDueDate)
+      : null;
+
+    if (!firstDueDate || Number.isNaN(firstDueDate.getTime())) {
+      throw new ApiError(
+        400,
+        "A valid first due date is required for the repayment schedule."
+      );
+    }
+
+    if (
+      !["single", "installment"].includes(paymentPlanType)
+    ) {
+      throw new ApiError(
+        400,
+        "Payment plan type must be either 'single' or 'installment'."
+      );
+    }
+
+    if (
+      paymentPlanType === "installment" &&
+      !["weekly", "bi-weekly", "monthly"].includes(frequency)
+    ) {
+      throw new ApiError(
+        400,
+        "Installment frequency must be weekly, bi-weekly, or monthly."
+      );
+    }
+
+    if (
+      paymentPlanType === "installment" &&
+      (!Number.isInteger(numberOfPayments) ||
+        numberOfPayments <= 0)
+    ) {
+      throw new ApiError(
+        400,
+        "Number of payments must be a positive whole number."
+      );
+    }
+
+    // ---------------------------------------------------------------------------
+    // Generate repayment schedule
+    // ---------------------------------------------------------------------------
+
+    const generatedSchedule = generateRepaymentSchedule({
+      loanAmount: principal,
+      interestRate,
+      paymentPlanType,
+      frequency,
+      numberOfPayments,
+      firstDueDate,
+      repaymentMonths: months,
+    });
+
+    // ---------------------------------------------------------------------------
+    // Preserve existing approvedTerms
+    // ---------------------------------------------------------------------------
 
     loan.approvedTerms = {
       loanAmount: principal,
-      interestRate: Number(approvedTerms.interestRate),
+
+      interestRate,
+
       repaymentMonths: months,
-      monthlyPayment: Math.round(monthly * 100) / 100,
+
+      monthlyPayment:
+        frequency === "monthly" &&
+          generatedSchedule.installments.length > 0
+          ? generatedSchedule.installments[0].amountDue
+          : null,
+      paymentPlanType,
+      frequency,
+      numberOfPayments,
+      firstDueDate,
+
       approvedAt: new Date(),
+
       approvedBy: req.user._id,
     };
-    loan.rejectionReason = '';
 
-    auditNote = `Approved for $${principal} at ${approvedTerms.interestRate}% over ${months} months.`;
+    loan.rejectionReason = "";
 
-    // Log approval notice
+    auditNote =
+      paymentPlanType === "single"
+        ? `Approved for $${principal} at ${interestRate}% as a single/balloon payment.`
+        : `Approved for $${principal} at ${interestRate}% over ${numberOfPayments} ${frequency} payments.`;
+
+    // ---------------------------------------------------------------------------
+    // Create / Update Repayment Schedule
+    // ---------------------------------------------------------------------------
+
+    const existingSchedule =
+      await RepaymentSchedule.findOne({
+        loanApplication: loan._id,
+      });
+
+    if (existingSchedule) {
+      // Do not accidentally create duplicate schedules
+      existingSchedule.paymentPlanType =
+        generatedSchedule.paymentPlanType;
+
+      existingSchedule.frequency =
+        generatedSchedule.frequency;
+
+      existingSchedule.numberOfPayments =
+        generatedSchedule.numberOfPayments;
+
+      existingSchedule.firstDueDate =
+        generatedSchedule.firstDueDate;
+
+      existingSchedule.totalPrincipal =
+        generatedSchedule.totalPrincipal;
+
+      existingSchedule.totalInterest =
+        generatedSchedule.totalInterest;
+
+      existingSchedule.totalScheduledAmount =
+        generatedSchedule.totalScheduledAmount;
+
+      existingSchedule.totalPaid =
+        generatedSchedule.totalPaid;
+
+      existingSchedule.remainingBalance =
+        generatedSchedule.remainingBalance;
+
+      existingSchedule.status = "active";
+
+      existingSchedule.installments =
+        generatedSchedule.installments;
+
+      existingSchedule.updatedBy =
+        req.user._id;
+
+      await existingSchedule.save();
+    } else {
+      await RepaymentSchedule.create({
+        loanApplication: loan._id,
+
+        paymentPlanType:
+          generatedSchedule.paymentPlanType,
+
+        frequency:
+          generatedSchedule.frequency,
+
+        numberOfPayments:
+          generatedSchedule.numberOfPayments,
+
+        firstDueDate:
+          generatedSchedule.firstDueDate,
+
+        totalPrincipal:
+          generatedSchedule.totalPrincipal,
+
+        totalInterest:
+          generatedSchedule.totalInterest,
+
+        totalScheduledAmount:
+          generatedSchedule.totalScheduledAmount,
+
+        totalPaid:
+          generatedSchedule.totalPaid,
+
+        remainingBalance:
+          generatedSchedule.remainingBalance,
+
+        status: "active",
+
+        installments:
+          generatedSchedule.installments,
+
+        createdBy: req.user._id,
+
+        updatedBy: req.user._id,
+      });
+    }
+
+    // ---------------------------------------------------------------------------
+    // Approval communication
+    // ---------------------------------------------------------------------------
+
     await CommunicationLog.create({
       customer: loan.customer,
+
       loan: loan._id,
-      channel: 'EMAIL',
+
+      channel: "EMAIL",
+
       recipient: loan.email,
-      subject: 'Congratulations! Your Title Bros Loan is Approved',
-      message: `Great news! Your auto title loan for your ${loan.vehicle.year} ${loan.vehicle.make} ${loan.vehicle.model} has been APPROVED for $${principal}. Next step: Visit our office to sign your agreement and pick up your funds!`,
-      type: 'AUTOMATED',
+
+      subject:
+        "Congratulations! Your Title Bros Loan is Approved",
+
+      message:
+        `Great news! Your auto title loan for your ` +
+        `${loan.vehicle.year} ${loan.vehicle.make} ${loan.vehicle.model} ` +
+        `has been APPROVED for $${principal}. ` +
+        `Next step: Visit our office to sign your agreement and pick up your funds!`,
+
+      type: "AUTOMATED",
+
       sentBy: req.user._id,
+
       sentByName: req.user.name,
+
       sentAt: new Date(),
     });
   }

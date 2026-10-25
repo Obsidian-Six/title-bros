@@ -18,40 +18,78 @@ import nodemailer from 'nodemailer';
  * @param {string} [options.text] - Plain text fallback
  * @returns {Promise<Object>}
  */
-export const sendEmail = async ({ email, subject, html, text }) => {
-  const hasSmtpConfig = process.env.SMTP_USER && process.env.SMTP_PASS;
+/**
+ * Title Bros email service.
+ * Uses real SMTP credentials from environment variables.
+ * Ethereal and test-preview logic have been removed.
+ */
+export const sendEmail = async ({
+  email,
+  subject,
+  html,
+  text,
+  attachments = [],
+}) => {
+  const host = process.env.SMTP_HOST;
+  const port = Number(process.env.SMTP_PORT || 587);
+  const user = process.env.SMTP_USER;
+  const pass = process.env.SMTP_PASS;
 
-  if (!hasSmtpConfig) {
-    console.log('\n=============================================================');
-    console.log('[EmailService Local Dev Notice] SMTP credentials not configured.');
-    console.log(`[EmailService] Intended Recipient: ${email}`);
-    console.log(`[EmailService] Subject: ${subject}`);
-    console.log(`[EmailService] Content Preview / Text:\n${text || 'HTML Template dispatched'}`);
-    console.log('=============================================================\n');
-    return { devMode: true, message: 'Dispatched to dev console' };
+  // Never silently skip email delivery.
+  if (!host || !user || !pass) {
+    throw new Error(
+      "SMTP configuration missing. Set SMTP_HOST, SMTP_USER and SMTP_PASS."
+    );
+  }
+
+  if (!Number.isInteger(port) || port < 1 || port > 65535) {
+    throw new Error("Invalid SMTP_PORT configuration.");
   }
 
   const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST || 'smtp.gmail.com',
-    port: parseInt(process.env.SMTP_PORT || '587', 10),
-    secure: process.env.SMTP_PORT === '465',
+    host,
+    port,
+    secure: port === 465,
     auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
+      user,
+      pass,
     },
+    connectionTimeout: 15000,
+    greetingTimeout: 15000,
+    socketTimeout: 20000,
   });
 
-  const mailOptions = {
-    from: `"${process.env.EMAIL_FROM_NAME || 'Title Bros Loans'}" <${process.env.EMAIL_FROM_ADDRESS || 'no-reply@titlebros.com'}>`,
-    to: email,
-    subject,
-    text,
-    html,
-  };
+  const fromAddress = process.env.EMAIL_FROM_ADDRESS || user;
+  const fromName = process.env.EMAIL_FROM_NAME || "Title Bros Loans";
 
-  const info = await transporter.sendMail(mailOptions);
-  console.log(`[EmailService] Email sent successfully to ${email}. MessageId: ${info.messageId}`);
-  return info;
+  try {
+    const info = await transporter.sendMail({
+      from: `"${fromName}" <${fromAddress}>`,
+      to: email,
+      subject,
+      text,
+      html,
+      attachments,
+    });
+
+    console.log("[EmailService] Email accepted by SMTP.", {
+      messageId: info.messageId,
+      recipient: email,
+      subject,
+      attachmentCount: attachments.length,
+    });
+
+    return info;
+  } catch (error) {
+    console.error("[EmailService] Email delivery failed.", {
+      recipient: email,
+      message: error.message,
+    });
+
+    throw error;
+  } finally {
+    transporter.close();
+  }
 };
 
 /**

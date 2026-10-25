@@ -47,7 +47,7 @@ const Contact = () => {
             </div>
 
             <Link
-              href={`/${locale}/apply`}
+              href={`/${locale}/pre-approval`}
               className="btn-primary mt-9"
             >
               {t("applyOnline")}

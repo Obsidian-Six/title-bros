@@ -24,6 +24,13 @@ export function validateStep(step, form) {
       errors.mileage =
         "Enter your current mileage.";
     }
+
+    if (form.vin) {
+      const vin = form.vin.trim().toUpperCase();
+      if (!/^[A-HJ-NPR-Z0-9]{17}$/.test(vin)) {
+        errors.vin = "VIN must be exactly 17 characters and cannot contain I, O, or Q.";
+      }
+    }
   }
 
   if (step === 1) {
@@ -66,6 +73,11 @@ export function validateStep(step, form) {
     if (!form.phone.trim()) {
       errors.phone =
         "Enter your phone number.";
+    } else {
+      const numericPhone = form.phone.replace(/\D/g, "");
+      if (numericPhone.length !== 10) {
+        errors.phone = "Enter a valid 10-digit US phone number.";
+      }
     }
 
     if (!form.email.trim()) {
@@ -83,6 +95,8 @@ export function validateStep(step, form) {
     if (!form.zip.trim()) {
       errors.zip =
         "Enter your ZIP code.";
+    } else if (!/^\d{5}(-\d{4})?$/.test(form.zip.trim())) {
+      errors.zip = "Enter a valid US ZIP code (e.g. 12345 or 12345-6789).";
     }
   }
 

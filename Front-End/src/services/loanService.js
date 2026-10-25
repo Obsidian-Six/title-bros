@@ -80,6 +80,21 @@ export const loanService = {
   // LOAN APPLICATION & REVIEW ENDPOINTS
   // ==========================================
 
+  
+  // Customer loan repayment dashboard
+  async getLoanLedger(loanId) {
+    return request(`/payments/loan/${loanId}/ledger`, {
+      method: "GET",
+    });
+  },
+
+  async getLoanPayments(loanId) {
+    return request(`/payments/loan/${loanId}`, {
+      method: "GET",
+    });
+  },
+
+
   /**
    * Submit loan application (Online application form)
    */
@@ -192,6 +207,25 @@ export const loanService = {
   async getMyApplications() {
     return request('/loans/my-applications', { method: 'GET' });
   },
+
+
+  async createStripeCheckout({
+    loanApplication,
+    repaymentSchedule,
+    installmentId,
+    locale = "en",
+  }) {
+    return request("/payments/stripe/checkout", {
+      method: "POST",
+      body: JSON.stringify({
+        loanApplication,
+        ...(repaymentSchedule ? { repaymentSchedule } : {}),
+        ...(installmentId ? { installmentId } : {}),
+        locale: locale === "es" ? "es" : "en",
+      }),
+    });
+  },
+
 
   // ==========================================
   // CUSTOMER MANAGEMENT ENDPOINTS

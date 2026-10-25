@@ -67,6 +67,17 @@ export default function CustomerPortalPage() {
   // Staged files waiting for manual user "Upload & Submit" click
   const [stagedFiles, setStagedFiles] = useState({});
 
+  const [creatingCheckout, setCreatingCheckout] = useState(false);
+  const [checkoutError, setCheckoutError] = useState("");
+
+  const [loanLedger, setLoanLedger] = useState(null);
+  const [ledgerLoading, setLedgerLoading] = useState(false);
+  const [ledgerError, setLedgerError] = useState("");
+  const [payingInstallmentId, setPayingInstallmentId] = useState(null);
+
+  const [installmentsExpanded, setInstallmentsExpanded] = useState(false);
+  const [paymentHistoryExpanded, setPaymentHistoryExpanded] = useState(false);
+
   // Load customer's applications
   const loadCustomerData = useCallback(async (isBackground = false) => {
     try {
@@ -112,6 +123,112 @@ export default function CustomerPortalPage() {
 
     return () => clearInterval(pollInterval);
   }, [isAuthenticated, loadCustomerData]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadLoanLedger = async () => {
+      const loanId = selectedApp?._id;
+
+      if (
+        !loanId ||
+        !["Approved", "Active", "Overdue"].includes(selectedApp.status)
+      ) {
+        setLoanLedger(null);
+        setLedgerError("");
+        setLedgerLoading(false);
+        return;
+      }
+
+      setLedgerLoading(true);
+      setLedgerError("");
+
+      try {
+        const result = await loanService.getLoanLedger(loanId);
+
+        if (cancelled) return;
+
+        if (!result?.success || !result?.data) {
+          throw new Error(
+            result?.message || "Unable to load repayment details."
+          );
+        }
+
+        setLoanLedger(result.data);
+      } catch (error) {
+        if (cancelled) return;
+
+        setLoanLedger(null);
+        setLedgerError(
+          error?.message || "Unable to load repayment details."
+        );
+      } finally {
+        if (!cancelled) {
+          setLedgerLoading(false);
+        }
+      }
+    };
+
+    loadLoanLedger();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [selectedApp?._id, selectedApp?.status]);
+
+
+  const handleStripeCheckout = async (installment) => {
+    if (!selectedApp?._id || !loanLedger?.repaymentScheduleId) {
+      setCheckoutError("Loan repayment details are not available yet.");
+      return;
+    }
+
+    const installmentId = installment?._id;
+
+    if (!installmentId || payingInstallmentId) return;
+
+    const remainingAmount = Number(
+      installment.remainingAmount ??
+      installment.amountDue ??
+      0
+    );
+
+    if (remainingAmount <= 0) {
+      setCheckoutError("This installment has no outstanding balance.");
+      return;
+    }
+
+    setPayingInstallmentId(installmentId);
+    setCheckoutError("");
+
+    try {
+      const currentLocale = Array.isArray(locale) ? locale[0] : locale;
+
+      const result = await loanService.createStripeCheckout({
+        loanApplication: selectedApp._id,
+        repaymentSchedule: loanLedger.repaymentScheduleId,
+        installmentId,
+        locale: currentLocale === "es" ? "es" : "en",
+      });
+
+      const checkoutUrl = result?.data?.checkoutUrl;
+
+      if (!result?.success || !checkoutUrl) {
+        throw new Error(
+          result?.message || "Stripe checkout URL was not returned."
+        );
+      }
+
+      window.location.assign(checkoutUrl);
+    } catch (error) {
+      setCheckoutError(
+        error?.message || "Unable to start payment. Please try again."
+      );
+      setPayingInstallmentId(null);
+    }
+  };
+
+
 
   // Handle upload of a specific requested document
   const handleUploadSpecificDoc = async (docName) => {
@@ -230,7 +347,7 @@ export default function CustomerPortalPage() {
               <RefreshCw size={15} className={loading ? "animate-spin" : ""} />
             </button>
             <Link
-              href={`/${locale}/apply`}
+              href={`/${locale}/pre-approval`}
               className="rounded-xl border border-[var(--line)] bg-[var(--paper)] px-3 py-2 text-xs font-bold text-[var(--ink)] hover:bg-[var(--line)] transition"
             >
               + New Application
@@ -306,11 +423,10 @@ export default function CustomerPortalPage() {
                     key={app._id}
                     type="button"
                     onClick={() => setSelectedApp(app)}
-                    className={`text-left p-4 rounded-2xl border transition flex flex-col justify-between ${
-                      isSelected
+                    className={`text-left p-4 rounded-2xl border transition flex flex-col justify-between ${isSelected
                         ? "border-[var(--green)] bg-emerald-50/40 shadow-sm ring-2 ring-[var(--green)]/30"
                         : "border-[var(--line)] bg-[var(--white)] hover:border-[var(--green)]/50 hover:bg-[var(--paper)]/50"
-                    }`}
+                      }`}
                   >
                     <div className="w-full">
                       <div className="flex items-center justify-between gap-1 mb-2">
@@ -318,15 +434,14 @@ export default function CustomerPortalPage() {
                           #{app._id.slice(-6).toUpperCase()}
                         </span>
                         <span
-                          className={`rounded-full px-2.5 py-0.5 text-[10px] font-black ${
-                            app.status === "Approved"
+                          className={`rounded-full px-2.5 py-0.5 text-[10px] font-black ${app.status === "Approved"
                               ? "bg-emerald-100 text-emerald-800"
                               : app.status === "Rejected"
-                              ? "bg-red-100 text-red-700"
-                              : app.status === "Pending Documents"
-                              ? "bg-amber-100 text-amber-800"
-                              : "bg-blue-100 text-blue-800"
-                          }`}
+                                ? "bg-red-100 text-red-700"
+                                : app.status === "Pending Documents"
+                                  ? "bg-amber-100 text-amber-800"
+                                  : "bg-blue-100 text-blue-800"
+                            }`}
                         >
                           {app.status === "Approved" ? "✓ Approved" : app.status}
                         </span>
@@ -364,7 +479,7 @@ export default function CustomerPortalPage() {
               You haven&apos;t submitted an auto title loan application yet. Apply online in 3 minutes and keep driving your car!
             </p>
             <Link
-              href={`/${locale}/apply`}
+              href={`/${locale}/pre-approval`}
               className="mt-5 inline-flex items-center gap-2 rounded-2xl bg-[var(--green)] px-5 py-2.5 text-xs font-bold text-white hover:bg-[var(--green-dark)] shadow-sm"
             >
               <span>Apply For a Loan</span>
@@ -378,15 +493,14 @@ export default function CustomerPortalPage() {
           <>
             {/* Status & What to Expect Advisory Card */}
             <div
-              className={`rounded-3xl border p-6 shadow-sm ${
-                selectedApp.status === "Approved"
+              className={`rounded-3xl border p-6 shadow-sm ${selectedApp.status === "Approved"
                   ? "bg-emerald-50/70 border-emerald-500/30 text-emerald-950"
                   : selectedApp.status === "Rejected"
-                  ? "bg-red-50/70 border-red-500/30 text-red-950"
-                  : selectedApp.status === "Pending Documents"
-                  ? "bg-amber-50/70 border-amber-500/30 text-amber-950"
-                  : "bg-blue-50/70 border-blue-500/30 text-blue-950"
-              }`}
+                    ? "bg-red-50/70 border-red-500/30 text-red-950"
+                    : selectedApp.status === "Pending Documents"
+                      ? "bg-amber-50/70 border-amber-500/30 text-amber-950"
+                      : "bg-blue-50/70 border-blue-500/30 text-blue-950"
+                }`}
             >
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div className="flex items-center gap-2 font-black text-base">
@@ -455,11 +569,10 @@ export default function CustomerPortalPage() {
                 {/* Step 2: Under Review */}
                 <div className="flex flex-col items-center">
                   <div
-                    className={`grid h-10 w-10 place-items-center rounded-full font-bold mb-2 shadow-sm ${
-                      selectedApp.status !== "New"
+                    className={`grid h-10 w-10 place-items-center rounded-full font-bold mb-2 shadow-sm ${selectedApp.status !== "New"
                         ? "bg-[var(--green)] text-white"
                         : "bg-[var(--paper)] text-[var(--muted)] border border-[var(--line)]"
-                    }`}
+                      }`}
                   >
                     <FileCheck size={20} />
                   </div>
@@ -470,13 +583,12 @@ export default function CustomerPortalPage() {
                 {/* Step 3: Documents */}
                 <div className="flex flex-col items-center">
                   <div
-                    className={`grid h-10 w-10 place-items-center rounded-full font-bold mb-2 shadow-sm ${
-                      hasPendingDocs
+                    className={`grid h-10 w-10 place-items-center rounded-full font-bold mb-2 shadow-sm ${hasPendingDocs
                         ? "bg-amber-500 text-white animate-pulse ring-4 ring-amber-500/20"
                         : allRequestedDocsUploaded || selectedApp.status === "Approved" || selectedApp.status === "Rejected"
-                        ? "bg-[var(--green)] text-white"
-                        : "bg-[var(--paper)] text-[var(--muted)] border border-[var(--line)]"
-                    }`}
+                          ? "bg-[var(--green)] text-white"
+                          : "bg-[var(--paper)] text-[var(--muted)] border border-[var(--line)]"
+                      }`}
                   >
                     <UploadCloud size={20} />
                   </div>
@@ -485,21 +597,20 @@ export default function CustomerPortalPage() {
                     {hasPendingDocs
                       ? "Action Required"
                       : allRequestedDocsUploaded
-                      ? "✓ Uploaded"
-                      : "Verification"}
+                        ? "✓ Uploaded"
+                        : "Verification"}
                   </span>
                 </div>
 
                 {/* Step 4: Decision */}
                 <div className="flex flex-col items-center">
                   <div
-                    className={`grid h-10 w-10 place-items-center rounded-full font-bold mb-2 shadow-sm ${
-                      selectedApp.status === "Approved"
+                    className={`grid h-10 w-10 place-items-center rounded-full font-bold mb-2 shadow-sm ${selectedApp.status === "Approved"
                         ? "bg-emerald-600 text-white"
                         : selectedApp.status === "Rejected"
-                        ? "bg-red-600 text-white"
-                        : "bg-[var(--paper)] text-[var(--muted)] border border-[var(--line)]"
-                    }`}
+                          ? "bg-red-600 text-white"
+                          : "bg-[var(--paper)] text-[var(--muted)] border border-[var(--line)]"
+                      }`}
                   >
                     <CheckCircle2 size={20} />
                   </div>
@@ -508,8 +619,8 @@ export default function CustomerPortalPage() {
                     {selectedApp.status === "Approved"
                       ? "Approved!"
                       : selectedApp.status === "Rejected"
-                      ? "Declined"
-                      : "Pending"}
+                        ? "Declined"
+                        : "Pending"}
                   </span>
                 </div>
               </div>
@@ -613,6 +724,558 @@ export default function CustomerPortalPage() {
                         <li>The vehicle for a quick 2-minute visual inspection.</li>
                       </ul>
                     </div>
+                    {/* Stripe Pay Now Button */}
+
+                    {/* Repayment Dashboard */}
+                    <div className="mt-6 rounded-3xl border border-emerald-200 bg-white p-5 sm:p-6 shadow-sm">
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                        <div>
+                          <span className="text-[10px] font-black uppercase tracking-widest text-emerald-700">
+                            Customer Repayment Center
+                          </span>
+                          <h3 className="mt-1 text-xl font-black text-[var(--ink)]">
+                            Loan Repayment Dashboard
+                          </h3>
+                          <p className="mt-1 text-sm text-[var(--muted)]">
+                            Track your outstanding balance, upcoming installments, and payment history.
+                          </p>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            if (!selectedApp?._id) return;
+
+                            setLedgerLoading(true);
+                            setLedgerError("");
+
+                            try {
+                              const result = await loanService.getLoanLedger(selectedApp._id);
+
+                              if (!result?.success || !result?.data) {
+                                throw new Error(
+                                  result?.message || "Unable to refresh repayment details."
+                                );
+                              }
+
+                              setLoanLedger(result.data);
+                            } catch (error) {
+                              setLedgerError(
+                                error?.message || "Unable to refresh repayment details."
+                              );
+                            } finally {
+                              setLedgerLoading(false);
+                            }
+                          }}
+                          disabled={ledgerLoading}
+                          className="inline-flex items-center justify-center gap-2 rounded-xl border border-[var(--line)] px-4 py-2 text-xs font-bold text-[var(--ink)] hover:bg-[var(--paper)] disabled:opacity-50"
+                        >
+                          <RefreshCw
+                            size={14}
+                            className={ledgerLoading ? "animate-spin" : ""}
+                          />
+                          Refresh Ledger
+                        </button>
+                      </div>
+
+                      {ledgerLoading && !loanLedger && (
+                        <div className="mt-6 flex items-center justify-center gap-2 rounded-2xl bg-[var(--paper)] p-8 text-sm font-semibold text-[var(--muted)]">
+                          <Loader2 size={18} className="animate-spin" />
+                          Loading repayment details...
+                        </div>
+                      )}
+
+                      {ledgerError && (
+                        <div
+                          role="alert"
+                          className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700"
+                        >
+                          {ledgerError}
+                        </div>
+                      )}
+
+                      {!ledgerLoading && !loanLedger && !ledgerError && (
+                        <div className="mt-5 rounded-2xl border border-dashed border-[var(--line)] p-6 text-center">
+                          <Clock size={26} className="mx-auto text-[var(--muted)]" />
+                          <p className="mt-2 text-sm font-bold text-[var(--ink)]">
+                            Repayment schedule not available
+                          </p>
+                          <p className="mt-1 text-xs text-[var(--muted)]">
+                            Your repayment details will appear here when the schedule is available.
+                          </p>
+                        </div>
+                      )}
+
+                      {loanLedger && (
+                        <>
+                          {/*
+        Keep amounts sourced from the backend ledger.
+        Do not calculate loan interest or payment totals in the browser.
+      */}
+                          {(() => {
+                            const summary = loanLedger.summary || {};
+                            const overdue = loanLedger.overdue || {};
+                            // Always process installments in contractual sequence, not by array order.
+                            const installments = Array.isArray(loanLedger.installments)
+                              ? [...loanLedger.installments].sort((a, b) => {
+                                  const numberA = Number(a.installmentNumber);
+                                  const numberB = Number(b.installmentNumber);
+                                  if (Number.isFinite(numberA) && Number.isFinite(numberB) && numberA !== numberB) {
+                                    return numberA - numberB;
+                                  }
+                                  return new Date(a.dueDate) - new Date(b.dueDate);
+                                })
+                              : [];
+                            const getInstallmentRemaining = (item) => Math.max(
+                              0,
+                              Number(
+                                item.remainingAmount ??
+                                (Number(item.amountDue || 0) - Number(item.amountPaid || 0))
+                              )
+                            );
+                            // Only the earliest unpaid/partially-paid installment is payable.
+                            const firstUnpaidInstallment = installments.find(
+                              (item) => getInstallmentRemaining(item) > 0
+                            );
+                            const payments = Array.isArray(loanLedger.payments)
+                              ? loanLedger.payments
+                              : [];
+
+                            const money = (value) =>
+                              new Intl.NumberFormat("en-US", {
+                                style: "currency",
+                                currency: "USD",
+                              }).format(Number(value) || 0);
+
+                            const date = (value) => {
+                              if (!value) return "Not scheduled";
+
+                              const parsed = new Date(value);
+
+                              return Number.isNaN(parsed.getTime())
+                                ? "Not scheduled"
+                                : parsed.toLocaleDateString("en-US", {
+                                  month: "short",
+                                  day: "numeric",
+                                  year: "numeric",
+                                });
+                            };
+
+                            const statusLabel = (item) => {
+                              if (
+                                Number(item.remainingAmount || 0) <= 0 &&
+                                Number(item.amountDue || 0) > 0
+                              ) {
+                                return "Paid";
+                              }
+
+                              const due = item.dueDate
+                                ? new Date(item.dueDate)
+                                : null;
+
+                              if (
+                                due &&
+                                !Number.isNaN(due.getTime()) &&
+                                due < new Date(new Date().setHours(0, 0, 0, 0)) &&
+                                Number(item.remainingAmount || 0) > 0
+                              ) {
+                                return "Overdue";
+                              }
+
+                              return item.status || "Pending";
+                            };
+
+                            const statusClass = (status) => {
+                              const normalized = String(status).toLowerCase();
+
+                              if (normalized === "paid" || normalized === "completed") {
+                                return "bg-emerald-100 text-emerald-800";
+                              }
+
+                              if (normalized === "overdue" || normalized === "failed") {
+                                return "bg-red-100 text-red-700";
+                              }
+
+                              if (normalized === "partial") {
+                                return "bg-amber-100 text-amber-800";
+                              }
+
+                              return "bg-blue-100 text-blue-800";
+                            };
+
+                            return (
+                              <>
+                                {/* Summary cards */}
+                                <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3">
+                                  <div className="rounded-2xl border border-[var(--line)] bg-[var(--paper)] p-4">
+                                    <p className="text-xs font-semibold text-[var(--muted)]">
+                                      Total Scheduled
+                                    </p>
+                                    <p className="mt-2 text-xl font-black text-[var(--ink)]">
+                                      {money(summary.totalContractualAmount ?? summary.totalScheduledAmount)}
+                                    </p>
+                                  </div>
+
+                                  <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
+                                    <p className="text-xs font-semibold text-emerald-800">
+                                      Total Paid
+                                    </p>
+                                    <p className="mt-2 text-xl font-black text-emerald-800">
+                                      {money(summary.totalPaid)}
+                                    </p>
+                                  </div>
+
+                                  <div className="rounded-2xl border border-[var(--line)] bg-[var(--paper)] p-4">
+                                    <p className="text-xs font-semibold text-[var(--muted)]">
+                                      Remaining Balance
+                                    </p>
+                                    <p className="mt-2 text-xl font-black text-[var(--ink)]">
+                                      {money(summary.remainingBalance)}
+                                    </p>
+                                  </div>
+
+                                  <div className="rounded-2xl border border-red-200 bg-red-50 p-4">
+                                    <p className="text-xs font-semibold text-red-700">
+                                      Overdue Amount
+                                    </p>
+                                    <p className="mt-2 text-xl font-black text-red-700">
+                                      {money(overdue.amountOverdue)}
+                                    </p>
+                                    <p className="mt-1 text-[11px] text-red-600">
+                                      {Number(overdue.installmentCount || 0)} overdue installment(s)
+                                    </p>
+                                  </div>
+                                </div>
+
+                                {/* Payment progress */}
+                                <div className="mt-4 rounded-2xl border border-[var(--line)] p-4">
+                                  <div className="flex items-center justify-between gap-3">
+                                    <span className="text-sm font-bold text-[var(--ink)]">
+                                      Repayment Progress
+                                    </span>
+                                    <span className="text-sm font-black text-emerald-700">
+                                      {Math.min(
+                                        100,
+                                        Math.max(0, Number(summary.paymentProgress) || 0)
+                                      ).toFixed(1)}%
+                                    </span>
+                                  </div>
+
+                                  <div
+                                    className="mt-3 h-2.5 overflow-hidden rounded-full bg-[var(--line)]"
+                                    role="progressbar"
+                                    aria-valuemin={0}
+                                    aria-valuemax={100}
+                                    aria-valuenow={Math.min(
+                                      100,
+                                      Math.max(0, Number(summary.paymentProgress) || 0)
+                                    )}
+                                  >
+                                    <div
+                                      className="h-full rounded-full bg-emerald-600 transition-all duration-500"
+                                      style={{
+                                        width: `${Math.min(
+                                          100,
+                                          Math.max(0, Number(summary.paymentProgress) || 0)
+                                        )}%`,
+                                      }}
+                                    />
+                                  </div>
+
+                                  <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-[var(--muted)]">
+                                    <span>
+                                      Paid: {Number(summary.installmentsPaid || 0)}
+                                    </span>
+                                    <span>
+                                      Partial: {Number(summary.installmentsPartial || 0)}
+                                    </span>
+                                    <span>
+                                      Pending: {Number(summary.installmentsPending || 0)}
+                                    </span>
+                                    <span>
+                                      Total: {Number(summary.totalInstallments || installments.length)}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                {/* Next payment */}
+                                {loanLedger.nextPayment && (
+                                  <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50/60 p-4 sm:p-5">
+                                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                      <div>
+                                        <p className="text-xs font-bold uppercase tracking-wide text-emerald-800">
+                                          Next Installment
+                                        </p>
+                                        <p className="mt-1 text-lg font-black text-emerald-950">
+                                          Installment #{loanLedger.nextPayment.installmentNumber}
+                                        </p>
+                                        <p className="mt-1 text-xs text-emerald-800">
+                                          Due {date(loanLedger.nextPayment.dueDate)}
+                                        </p>
+                                      </div>
+
+                                      <div className="sm:text-right">
+                                        <p className="text-2xl font-black text-emerald-800">
+                                          {money(
+                                            loanLedger.nextPayment.totalRemaining ??
+                                            loanLedger.nextPayment.remainingAmount
+                                          )}
+                                        </p>
+                                        {loanLedger.nextPayment.isOverdue && (
+                                          <span className="mt-1 inline-block rounded-full bg-red-100 px-2.5 py-1 text-[10px] font-black text-red-700">
+                                            PAYMENT OVERDUE
+                                          </span>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
+                                )}
+
+                                {/* Installment schedule */}
+
+                                {/* Compact Installment Accordion */}
+                                <div className="mt-6 overflow-hidden rounded-2xl border border-[var(--line)] bg-white">
+                                  <button
+                                    type="button"
+                                    onClick={() => setInstallmentsExpanded((prev) => !prev)}
+                                    aria-expanded={installmentsExpanded}
+                                    className="flex w-full items-center justify-between gap-3 p-4 text-left transition hover:bg-[var(--paper)] sm:p-5"
+                                  >
+                                    <div className="flex min-w-0 items-center gap-3">
+                                      <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-emerald-50 text-emerald-700">
+                                        <Calendar size={19} />
+                                      </div>
+
+                                      <div className="min-w-0">
+                                        <h4 className="font-black text-sm text-[var(--ink)]">
+                                          Installment Schedule
+                                        </h4>
+                                        <p className="mt-1 text-xs text-[var(--muted)]">
+                                          {installments.length} installments
+                                          {" · "}
+                                          {Number(summary.installmentsPaid || 0)} paid
+                                          {" · "}
+                                          {Number(summary.installmentsPending || 0)} pending
+                                        </p>
+                                      </div>
+                                    </div>
+
+                                    <div className="flex shrink-0 items-center gap-2">
+                                      <span className="hidden rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-800 sm:inline-flex">
+                                        {installmentsExpanded ? "Hide Schedule" : "View Schedule"}
+                                      </span>
+
+                                      <ChevronRight
+                                        size={19}
+                                        className={`text-[var(--muted)] transition-transform duration-200 ${installmentsExpanded ? "rotate-90" : ""
+                                          }`}
+                                      />
+                                    </div>
+                                  </button>
+
+                                  {installmentsExpanded && (
+                                    <div className="space-y-3 border-t border-[var(--line)] bg-[var(--paper)]/40 p-3 sm:p-4">
+                                      {installments.length === 0 ? (
+                                        <p className="rounded-xl bg-white p-4 text-sm text-[var(--muted)]">
+                                          No installments found.
+                                        </p>
+                                      ) : (
+                                        installments.map((item, index) => {
+                                          const remaining = getInstallmentRemaining(item);
+
+                                          const status = statusLabel(item);
+                                          const isPaid =
+                                            remaining <= 0 ||
+                                            ["paid", "completed"].includes(
+                                              String(status).toLowerCase()
+                                            );
+                                          const isFirstUnpaid = Boolean(
+                                            firstUnpaidInstallment &&
+                                            String(firstUnpaidInstallment._id || firstUnpaidInstallment.installmentId) ===
+                                              String(item._id || item.installmentId)
+                                          );
+                                          const isPaying = payingInstallmentId === item._id;
+
+                                          return (
+                                            <div
+                                              key={item._id || `${item.installmentNumber}-${index}`}
+                                              className="rounded-xl border border-[var(--line)] bg-white p-4"
+                                            >
+                                              <div className="flex items-start justify-between gap-3">
+                                                <div className="min-w-0">
+                                                  <p className="font-black text-sm text-[var(--ink)]">
+                                                    Installment #{item.installmentNumber ?? index + 1}
+                                                  </p>
+
+                                                  <p className="mt-1 text-xs text-[var(--muted)]">
+                                                    Due {date(item.dueDate)}
+                                                  </p>
+
+                                                  <span
+                                                    className={`mt-2 inline-flex rounded-full px-2.5 py-1 text-[10px] font-black ${statusClass(status)}`}
+                                                  >
+                                                    {status}
+                                                  </span>
+                                                </div>
+
+                                                <div className="shrink-0 text-right">
+                                                  <p className="text-[10px] text-[var(--muted)]">
+                                                    Amount due
+                                                  </p>
+                                                  <p className="mt-1 text-base font-black text-[var(--ink)]">
+                                                    {money(remaining)}
+                                                  </p>
+                                                </div>
+                                              </div>
+
+                                              {!isPaid && isFirstUnpaid && (
+                                                <button
+                                                  type="button"
+                                                  onClick={() => handleStripeCheckout(item)}
+                                                  disabled={
+                                                    Boolean(payingInstallmentId) ||
+                                                    !loanLedger.repaymentScheduleId
+                                                  }
+                                                  className="mt-3 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#087a45] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[#06663a] disabled:cursor-not-allowed disabled:opacity-60"
+                                                >
+                                                  {isPaying ? (
+                                                    <>
+                                                      <Loader2 size={16} className="animate-spin" />
+                                                      Preparing secure payment...
+                                                    </>
+                                                  ) : (
+                                                    <>
+                                                      Pay {money(remaining)}
+                                                      <ArrowRight size={16} />
+                                                    </>
+                                                  )}
+                                                </button>
+                                              )}
+
+                                              {!isPaid && !isFirstUnpaid && (
+                                                <div className="mt-3 flex min-h-10 items-center justify-center gap-2 rounded-xl border border-[var(--line)] bg-[var(--paper)] px-4 py-2 text-xs font-semibold text-[var(--muted)]">
+                                                  <Lock size={14} />
+                                                  Pay previous installment first
+                                                </div>
+                                              )}
+                                            </div>
+                                          );
+                                        })
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
+
+
+                                {/* Payment history */}
+                              
+<div className="mt-3 overflow-hidden rounded-2xl border border-[var(--line)] bg-white">
+  <button
+    type="button"
+    onClick={() => setPaymentHistoryExpanded((prev) => !prev)}
+    aria-expanded={paymentHistoryExpanded}
+    className="flex w-full items-center justify-between gap-3 p-4 text-left hover:bg-[var(--paper)]"
+  >
+    <div>
+      <h4 className="text-sm font-black text-[var(--ink)]">
+        Payment History
+      </h4>
+      <p className="mt-1 text-xs text-[var(--muted)]">
+        {payments.length} recorded payment(s)
+      </p>
+    </div>
+
+    <ChevronRight
+      size={19}
+      className={`transition-transform ${
+        paymentHistoryExpanded ? "rotate-90" : ""
+      }`}
+    />
+  </button>
+
+  {paymentHistoryExpanded && (
+    <div className="border-t border-[var(--line)] p-3 sm:p-4">
+     {payments.length === 0 ? (
+                                    <div className="mt-3 rounded-2xl border border-dashed border-[var(--line)] p-6 text-center">
+                                      <DollarSign size={24} className="mx-auto text-[var(--muted)]" />
+                                      <p className="mt-2 text-sm font-bold text-[var(--ink)]">
+                                        No payments recorded yet
+                                      </p>
+                                      <p className="mt-1 text-xs text-[var(--muted)]">
+                                        Completed payments will appear here after Stripe confirms them.
+                                      </p>
+                                    </div>
+                                  ) : (
+                                    <div className="mt-3 overflow-x-auto rounded-2xl border border-[var(--line)]">
+                                      <table className="w-full min-w-[540px] text-left text-xs">
+                                        <thead className="bg-[var(--paper)] text-[var(--muted)]">
+                                          <tr>
+                                            <th className="px-4 py-3 font-bold">Date</th>
+                                            <th className="px-4 py-3 font-bold">Receipt</th>
+                                            <th className="px-4 py-3 font-bold">Method</th>
+                                            <th className="px-4 py-3 font-bold">Status</th>
+                                            <th className="px-4 py-3 text-right font-bold">Amount</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                          {payments.map((payment, index) => (
+                                            <tr
+                                              key={payment._id || index}
+                                              className="border-t border-[var(--line)]"
+                                            >
+                                              <td className="px-4 py-3 text-[var(--ink)]">
+                                                {date(payment.paymentDate || payment.createdAt)}
+                                              </td>
+                                              <td className="px-4 py-3 font-semibold text-[var(--ink)]">
+                                                {payment.receiptNumber || "—"}
+                                              </td>
+                                              <td className="px-4 py-3 capitalize text-[var(--muted)]">
+                                                {String(payment.paymentMethod || "—").replaceAll("_", " ")}
+                                              </td>
+                                              <td className="px-4 py-3">
+                                                <span
+                                                  className={`inline-block rounded-full px-2 py-1 text-[10px] font-bold ${statusClass(payment.status || "pending")}`}
+                                                >
+                                                  {payment.status || "Pending"}
+                                                </span>
+                                              </td>
+                                              <td className="px-4 py-3 text-right font-black text-[var(--ink)]">
+                                                {money(payment.amountReceived)}
+                                              </td>
+                                            </tr>
+                                          ))}
+                                        </tbody>
+                                      </table>
+                                    </div>
+                                  )}
+    </div>
+  )}
+</div>
+
+
+                                {checkoutError && (
+                                  <div
+                                    role="alert"
+                                    className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm font-medium text-red-700"
+                                  >
+                                    {checkoutError}
+                                  </div>
+                                )}
+
+                                <p className="mt-5 flex items-start gap-2 text-[11px] leading-relaxed text-[var(--muted)]">
+                                  <Lock size={14} className="mt-0.5 shrink-0" />
+                                  Online payments are processed securely through Stripe. Your
+                                  installment balance should update after the payment is confirmed
+                                  by the payment server.
+                                </p>
+                              </>
+                            );
+                          })()}
+                        </>
+                      )}
+                    </div>
+
+
                   </div>
                 )}
               </div>
@@ -666,15 +1329,14 @@ export default function CustomerPortalPage() {
                     return (
                       <div
                         key={idx}
-                        className={`p-4 rounded-2xl border transition ${
-                          uploadedDoc
+                        className={`p-4 rounded-2xl border transition ${uploadedDoc
                             ? uploadedDoc.status === "Accepted"
                               ? "bg-emerald-50/50 border-emerald-300"
                               : uploadedDoc.status === "Rejected"
-                              ? "bg-red-50/50 border-red-300"
-                              : "bg-blue-50/50 border-blue-200"
+                                ? "bg-red-50/50 border-red-300"
+                                : "bg-blue-50/50 border-blue-200"
                             : "bg-amber-50/40 border-amber-300"
-                        }`}
+                          }`}
                       >
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
                           <div className="flex items-center gap-2">
@@ -682,22 +1344,21 @@ export default function CustomerPortalPage() {
                             <span className="font-black text-sm text-[var(--ink)]">{docName}</span>
                           </div>
                           <span
-                            className={`text-[11px] font-black px-2.5 py-0.5 rounded-full ${
-                              uploadedDoc
+                            className={`text-[11px] font-black px-2.5 py-0.5 rounded-full ${uploadedDoc
                                 ? uploadedDoc.status === "Accepted"
                                   ? "bg-emerald-200 text-emerald-900"
                                   : uploadedDoc.status === "Rejected"
-                                  ? "bg-red-200 text-red-900"
-                                  : "bg-blue-200 text-blue-900"
+                                    ? "bg-red-200 text-red-900"
+                                    : "bg-blue-200 text-blue-900"
                                 : "bg-amber-200 text-amber-900"
-                            }`}
+                              }`}
                           >
                             {uploadedDoc
                               ? uploadedDoc.status === "Accepted"
                                 ? "✓ Verified & Accepted"
                                 : uploadedDoc.status === "Rejected"
-                                ? `✕ Rejected (${uploadedDoc.rejectionReason || "Re-upload required"})`
-                                : "✓ Uploaded (Under Review)"
+                                  ? `✕ Rejected (${uploadedDoc.rejectionReason || "Re-upload required"})`
+                                  : "✓ Uploaded (Under Review)"
                               : "Upload Required"}
                           </span>
                         </div>
@@ -847,13 +1508,12 @@ export default function CustomerPortalPage() {
 
                       <div className="flex items-center gap-2">
                         <span
-                          className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
-                            doc.status === "Accepted"
+                          className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold ${doc.status === "Accepted"
                               ? "bg-emerald-100 text-emerald-800"
                               : doc.status === "Rejected"
-                              ? "bg-red-100 text-red-700"
-                              : "bg-blue-100 text-blue-800"
-                          }`}
+                                ? "bg-red-100 text-red-700"
+                                : "bg-blue-100 text-blue-800"
+                            }`}
                         >
                           {doc.status === "Accepted" ? "✓ Verified" : doc.status}
                         </span>
@@ -1012,8 +1672,8 @@ export default function CustomerPortalPage() {
                       {selectedApp.status === "Approved"
                         ? "Approved"
                         : selectedApp.status === "Rejected"
-                        ? "Declined"
-                        : "Review in Progress"}
+                          ? "Declined"
+                          : "Review in Progress"}
                     </p>
                   </div>
                 </div>

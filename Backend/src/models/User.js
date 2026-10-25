@@ -56,6 +56,14 @@ const userSchema = new mongoose.Schema(
       type: String,
       trim: true,
       default: '',
+      validate: {
+        validator: function(v) {
+          if (!v) return true; // optional
+          const digits = v.replace(/\D/g, "");
+          return digits.length === 10;
+        },
+        message: props => `${props.value} is not a valid 10-digit US phone number.`
+      }
     },
     password: {
       type: String,

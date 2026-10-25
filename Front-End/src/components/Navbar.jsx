@@ -261,7 +261,7 @@ export default function Navbar() {
               <span className="hidden xl:inline">{messages.navbar.call}</span>
             </a>
 
-            <Button href={`/${locale}/apply`} icon={ArrowUpRight}>
+            <Button href={`/${locale}/pre-approval`} icon={ArrowUpRight}>
               {messages.navbar.applyNow}
             </Button>
           </div>
@@ -357,7 +357,7 @@ export default function Navbar() {
                 )}
 
                 <Link
-                  href={`/${locale}/apply`}
+                  href={`/${locale}/pre-approval`}
                   onClick={() => setOpen(false)}
                   className="btn-primary flex items-center justify-center gap-2"
                 >
